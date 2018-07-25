@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>Floor1.qml</file>
+        <file>Floor2.qml</file>
+        <file>Floor3.qml</file>
+        <file>Task.qml</file>
+    </qresource>
+</RCC>
