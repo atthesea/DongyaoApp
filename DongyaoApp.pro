@@ -1,4 +1,4 @@
-QT += quick
+QT += quick websockets
 CONFIG += c++11
 
 # The following define makes your compiler emit warnings if you use
@@ -13,7 +13,24 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-        main.cpp
+        main.cpp \
+    config.cpp \
+    global.cpp \
+    storagedata.cpp \
+    task.cpp \
+    wmsconnection.cpp \
+    dispatchconnection.cpp \
+    msgcenter.cpp \
+    base64.cpp \
+    common.cpp \
+    mapmap/mapbackground.cpp \
+    mapmap/mapblock.cpp \
+    mapmap/mapfloor.cpp \
+    mapmap/mapgroup.cpp \
+    mapmap/mappath.cpp \
+    mapmap/mappoint.cpp \
+    mapmap/mapspirit.cpp \
+    mapmap/onemap.cpp
 
 RESOURCES += qml.qrc
 
@@ -27,3 +44,46 @@ QML_DESIGNER_IMPORT_PATH =
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+HEADERS += \
+    config.h \
+    global.h \
+    storagedata.h \
+    task.h \
+    wmsconnection.h \
+    dispatchconnection.h \
+    msgcenter.h \
+    base64.h \
+    common.h \
+    protocol.h \
+    mapmap/mapbackground.h \
+    mapmap/mapblock.h \
+    mapmap/mapfloor.h \
+    mapmap/mapgroup.h \
+    mapmap/mappath.h \
+    mapmap/mappoint.h \
+    mapmap/mapspirit.h \
+    mapmap/onemap.h
+
+# assuming you want to deploy qml/foo/main.qml file, you need to add the flowing lines to your .pro/.pri file(s)
+deployment.files=dongyao_app_config.json
+android { #define an android block
+    deployment.path=/assets/ #all assets must go to "/assets" folder of your android package
+} else : maemo5 { #other platforms
+    deployment.path=/opt/$${TARGET}
+}
+INSTALLS += deployment
+
+DISTFILES += \
+    android/AndroidManifest.xml \
+    android/gradle/wrapper/gradle-wrapper.jar \
+    android/gradlew \
+    android/res/values/libs.xml \
+    android/build.gradle \
+    android/gradle/wrapper/gradle-wrapper.properties \
+    android/gradlew.bat \
+    android/res/values/apptheme.xml \
+    android/res/drawable/splash.xml \
+    android/res/drawable/hrg.png
+
+ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
