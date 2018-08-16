@@ -3,6 +3,7 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QHostInfo>
 
 #include "global.h"
 
@@ -19,7 +20,6 @@ DispatchConnection::~DispatchConnection()
 
 bool DispatchConnection::send(const QJsonObject &json)
 {
-    if(m_webSocket.isValid())return false;
     QJsonDocument d(json);
     QString ss(d.toJson());
     return ss.length() ==  m_webSocket.sendTextMessage(ss);
@@ -39,11 +39,24 @@ void DispatchConnection::connToServer(QString _ip,int _port)
     port = _port;
     connect(&m_webSocket, &QWebSocket::connected, this, &DispatchConnection::sig_connect);
     connect(&m_webSocket, &QWebSocket::disconnected, this, &DispatchConnection::sig_disconnect);
-    connect(&m_webSocket, &QWebSocket::binaryMessageReceived,this,&DispatchConnection::sig_onRead);
+    connect(&m_webSocket, &QWebSocket::textMessageReceived,this,&DispatchConnection::sig_onRead);
     connect(&m_webSocket, &QWebSocket::disconnected, this, &DispatchConnection::slot_disconnect);
 
+//    QHostInfo info=QHostInfo::fromName(QHostInfo::localHostName());
+
+//    if (info.error() != QHostInfo::NoError)
+//    {
+//        qDebug() << "Lookup failed:" << info.errorString();
+//        return;
+//    }
+
+//    for (int i = 0;i < info.addresses().size();i++)
+//    {
+//        qDebug() << "Found address:" << info.addresses()[i].toString() << endl;
+//    }
 
     QString _url = QString("ws://%1:%2").arg(ip).arg(port);
+    qDebug()<<"url = "<<_url.toLatin1();
     m_webSocket.open(QUrl(_url));
 }
 
@@ -58,6 +71,11 @@ void DispatchConnection::slot_disconnect()
 {
     //重连
     QString _url = QString("ws://%1:%2").arg(ip).arg(port);
-    m_webSocket.open(QUrl(_url));
+    try{
+        QyhSleep(5000);
+        m_webSocket.open(QUrl(_url));
+    }catch(...){
+
+    }
 }
 

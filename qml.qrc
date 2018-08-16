@@ -1,10 +1,10 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
-        <file>Floor1.qml</file>
-        <file>Floor2.qml</file>
-        <file>Floor3.qml</file>
-        <file>Task.qml</file>
-        <file>LoadFrame.qml</file>
+        <file>gif/loading.gif</file>
+        <file>component/main/MainPage.qml</file>
+        <file>component/common/SettingsIcon.qml</file>
+        <file>component/load/LoadPage.qml</file>
+        <file>component/admin/AdminPage.qml</file>
     </qresource>
 </RCC>

@@ -16,14 +16,13 @@ MsgCenter::~MsgCenter()
 {
     quit =true;
     condition.wakeAll();
-    thread_msg_process.join();
+    if(thread_msg_process.joinable())thread_msg_process.join();
 }
 void MsgCenter::init()
 {
-    connect(&dispatch_connection,SIGNAL(onConnect()),this,SIGNAL(sig_connection_connected()));
-    connect(&dispatch_connection,SIGNAL(onConnecting()),this,SIGNAL(sig_connection_conntectting()));
-    connect(&dispatch_connection,SIGNAL(onDisconnect()),this,SIGNAL(sig_connection_conntectting()));
-    connect(&dispatch_connection,SIGNAL(onRead(QByteArray)),this,SLOT(push(QByteArray)));
+    connect(&dispatch_connection,SIGNAL(sig_connect()),this,SIGNAL(sig_connection_connected()));
+    connect(&dispatch_connection,SIGNAL(sig_disconnect()),this,SIGNAL(sig_connection_disconnected()));
+    connect(&dispatch_connection,SIGNAL(sig_onRead(QString)),this,SLOT(push(QString)));
     dispatch_connection.connToServer(g_config.getDispatch_ip(),g_config.getDispatch_port());
 
     //响应消息处理的线程
@@ -37,13 +36,14 @@ void MsgCenter::init()
                 responsesMtx.unlock();
                 break;
             }
-            QByteArray response = responses.front();
+            QString response = responses.front();
             responses.pop_front();
             responsesMtx.unlock();
 
-            QJsonDocument d = QJsonDocument::fromJson(response);
+            QJsonDocument d = QJsonDocument::fromJson(response.toLocal8Bit());
             parseOneMsg(d.object());
         }
+        qDebug()<<"QUIT";
     });
 }
 
@@ -64,7 +64,7 @@ int MsgCenter::getServerPort()
 }
 
 //入队响应消息
-void MsgCenter::push(const QByteArray &response)
+void MsgCenter::push(const QString &response)
 {
     responsesMtx.lock();
     responses.push_back(response);
@@ -83,7 +83,7 @@ void MsgCenter::requestWaitResponse(const QJsonObject &request)
     int kk = 200;
     while(!getResponse&&--kk>0)
     {
-        QyhSleep(10);
+        QyhSleep(100);
     }
     if(kk<=0)
         emit waitResponseTimeOut();

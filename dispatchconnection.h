@@ -17,7 +17,7 @@ public:
 signals:
     void sig_connect();
     void sig_disconnect();
-    void sig_onRead(QByteArray);
+    void sig_onRead(QString);
 public slots:
     void slot_disconnect();
 private:

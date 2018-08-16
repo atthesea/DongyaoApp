@@ -1,8 +1,8 @@
 {
     "floor":"floor1",
-    "wms_ip":"192.168.0.101",
+    "wms_ip":"10.0.2.2",
     "wms_port":9997,
-    "dispatch_ip":"192.168.0.101",
+    "dispatch_ip":"10.0.2.2",
     "dispatch_port":9998,
     "username":"qyh",
     "userpwd":"1234",

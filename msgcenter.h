@@ -123,7 +123,7 @@ signals:
     void sig_pub_agv_position(int id,QString name,double x,double y,double theta);
 
 public slots:
-    void push(const QByteArray &response);
+    void push(const QString &response);
 private:
     void response_null(const QJsonObject &response);
     //用户部分
@@ -158,7 +158,7 @@ private:
 
     DispatchConnection dispatch_connection;
 
-    QQueue<QByteArray> responses;
+    QQueue<QString> responses;
     QWaitCondition condition;
     QMutex responsesMtx;
 
