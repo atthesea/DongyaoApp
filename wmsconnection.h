@@ -13,6 +13,8 @@ public:
 
     Q_INVOKABLE void connToServer(QString ip,int port);
 
+    Q_INVOKABLE bool getIsConnect();
+
     //请求库位信息
     Q_INVOKABLE bool requestStorayType(QString floor_info);
 

@@ -1,10 +1,23 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
-        <file>gif/loading.gif</file>
         <file>component/main/MainPage.qml</file>
         <file>component/common/SettingsIcon.qml</file>
         <file>component/load/LoadPage.qml</file>
         <file>component/admin/AdminPage.qml</file>
+        <file>component/main/Floor.qml</file>
+        <file>component/main/Task.qml</file>
+        <file>component/main/FloorCreate.js</file>
+        <file>component/main/TaskCreate.js</file>
+        <file>component/main/AgvLineCreate.js</file>
+        <file>component/main/AgvStationCreate.js</file>
+        <file>component/main/AgvCarCreate.js</file>
+        <file>component/main/AgvCar.qml</file>
+        <file>component/main/AgvLine.qml</file>
+        <file>component/main/AgvStation.qml</file>
+        <file>component/common/BusyIndicator.qml</file>
+        <file>component/common/Button.qml</file>
+        <file>gif/loading.gif</file>
+        <file>component/common/QyhButton.qml</file>
     </qresource>
 </RCC>

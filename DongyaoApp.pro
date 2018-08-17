@@ -30,7 +30,9 @@ SOURCES += \
     mapmap/mappath.cpp \
     mapmap/mappoint.cpp \
     mapmap/mapspirit.cpp \
-    mapmap/onemap.cpp
+    mapmap/onemap.cpp \
+    bkgimgprovider.cpp \
+    floormodeldata.cpp
 
 RESOURCES += qml.qrc
 
@@ -63,7 +65,9 @@ HEADERS += \
     mapmap/mappath.h \
     mapmap/mappoint.h \
     mapmap/mapspirit.h \
-    mapmap/onemap.h
+    mapmap/onemap.h \
+    bkgimgprovider.h \
+    floormodeldata.h
 
 # assuming you want to deploy qml/foo/main.qml file, you need to add the flowing lines to your .pro/.pri file(s)
 deployment.files=dongyao_app_config.json
@@ -84,6 +88,7 @@ DISTFILES += \
     android/gradlew.bat \
     android/res/values/apptheme.xml \
     android/res/drawable/splash.xml \
-    android/res/drawable/hrg.png
+    android/res/drawable/hrg.png \
+    dongyao_app_config.json
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android

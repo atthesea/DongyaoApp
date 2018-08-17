@@ -4,6 +4,7 @@
 #include "storagedata.h"
 #include "task.h"
 #include "global.h"
+#include "bkgimgprovider.h"
 
 int main(int argc, char *argv[])
 {
@@ -24,6 +25,8 @@ int main(int argc, char *argv[])
     ctxt->setContextProperty("g_wmsConnection", &g_wmsConnection);
     ctxt->setContextProperty("msgCenter", &msgCenter);
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+    BkgImgProvider *imageProvider = new BkgImgProvider;
+    engine.addImageProvider("bkgs", imageProvider);
     if (engine.rootObjects().isEmpty())
         return -1;
 

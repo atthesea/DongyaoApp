@@ -1,8 +1,8 @@
 {
     "floor":"floor1",
-    "wms_ip":"10.0.2.2",
+    "wms_ip":"127.0.0.1",
     "wms_port":9997,
-    "dispatch_ip":"10.0.2.2",
+    "dispatch_ip":"127.0.0.1",
     "dispatch_port":9998,
     "username":"qyh",
     "userpwd":"1234",
@@ -56,6 +56,12 @@
         {
             "task_no":8,
             "task_discribe":"1L空托盘-->3L空托盘机",
+            "task_from_store_no":"F1_EMPTYTRAY",
+            "task_to_store_no":"F3_EMPTYTRAY"
+        },
+        {
+            "task_no":9,
+            "task_discribe":"2L包材-->3L外包室",
             "task_from_store_no":"F1_EMPTYTRAY",
             "task_to_store_no":"F3_EMPTYTRAY"
         }
@@ -380,7 +386,7 @@
     },
 
     "floor2":{
-        "hand_tasks":[3],
+        "hand_tasks":[3,9],
         "storages":[
             {
                 "store_no":"F1_MATERIAL",

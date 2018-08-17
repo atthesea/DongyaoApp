@@ -84,12 +84,18 @@ public:
     Q_INVOKABLE QString getServerIp();
     Q_INVOKABLE int getServerPort();
 
+    Q_INVOKABLE bool getIsConnect(){return dispatch_connection.isConnect();}
+
+    Q_INVOKABLE bool hasBkg(int floorId);
+
     //一共五个请求：登陆/载入地图/订阅任务/订阅位置/订阅状态
     Q_INVOKABLE void login(QString username,QString password);
     Q_INVOKABLE void mapLoad();
     Q_INVOKABLE void subTask();
     Q_INVOKABLE void subAgvPosition();
     Q_INVOKABLE void subAgvStatus();
+
+    Q_INVOKABLE QList<QObject *> getFloors();
 
     //获取任务列表
     Q_INVOKABLE QList<TASK_INFO> getTaskInfoModel(){return agvtaskinfos;}

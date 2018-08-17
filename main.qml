@@ -52,4 +52,9 @@ ApplicationWindow {
     {
         stack.push(adminpage);
     }
+
+    function showMain()
+    {
+        stack.push(mainpage);
+    }
 }

@@ -5,6 +5,9 @@
 #include "base64.h"
 #include <iostream>
 #include "protocol.h"
+#include "floormodeldata.h"
+
+#include <QImage>
 
 MsgCenter::MsgCenter(QObject *parent) : QObject(parent),
     quit(false),
@@ -18,6 +21,7 @@ MsgCenter::~MsgCenter()
     condition.wakeAll();
     if(thread_msg_process.joinable())thread_msg_process.join();
 }
+
 void MsgCenter::init()
 {
     connect(&dispatch_connection,SIGNAL(sig_connect()),this,SIGNAL(sig_connection_connected()));
@@ -201,6 +205,7 @@ void MsgCenter::response_map_get(const QJsonObject &response)
         int y = station["y"].toInt();
         int realX = station["realX"].toInt();
         int realY = station["realY"].toInt();
+        int realA = station["realA"].toInt();
         int labelXoffset = station["labelXoffset"].toInt();
         int labelYoffset = station["labelYoffset"].toInt();
         bool mapchange = station["mapChange"].toBool();
@@ -210,7 +215,7 @@ void MsgCenter::response_map_get(const QJsonObject &response)
         int agvType = station["agvType"].toInt();
         std::string lineId = station["lineId"].toString().toStdString();
 
-        MapPoint *p = new MapPoint(id,name,(MapPoint::Map_Point_Type)station_type,x,y,realX,realY,labelXoffset,labelYoffset,mapchange,locked,ip,port,agvType,lineId);
+        MapPoint *p = new MapPoint(id,name,(MapPoint::Map_Point_Type)station_type,x,y,realX,realY,realA,labelXoffset,labelYoffset,mapchange,locked,ip,port,agvType,lineId);
         g_onemap.addSpirit(p);
     }
 
@@ -316,10 +321,6 @@ void MsgCenter::response_map_get(const QJsonObject &response)
         for(int k=0;k<spirits.size();++k){
             p->addSpirit(spirits[k].toInt());
         }
-        QJsonArray agvs = group["agvs"].toArray();
-        for(int k=0;k<agvs.size();++k){
-            p->addAgv(agvs[k].toInt());
-        }
         g_onemap.addSpirit(p);
     }
 
@@ -347,6 +348,25 @@ void MsgCenter::pub_agv_position(const QJsonObject &response)
 void MsgCenter::response_task_sub(const QJsonObject &response)
 {
     emit subTaskSuccess();
+}
+
+bool MsgCenter::hasBkg(int floorId)
+{
+    QImage img;
+    auto floor = g_onemap.getFloorById(floorId);
+    if(floor!=nullptr){
+        int bkgId = floor->getBkg();
+        auto bkg = g_onemap.getBackgroundById(bkgId);
+
+        if(bkg!=nullptr){
+            QByteArray ba(bkg->getImgData(),bkg->getImgDataLen());
+            img.loadFromData(ba);
+            if(!img.isNull()){
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 void MsgCenter::pub_agv_task(const QJsonObject &response)
@@ -381,8 +401,8 @@ void MsgCenter::pub_agv_task(const QJsonObject &response)
             QJsonArray json_things = json_one_node["things"].toArray();
             for(int k=0;k<json_things.size();++k){
                 QJsonObject json_one_thing = json_things[k].toObject();
-//                node.dowhat = json_one_thing["id"].toInt();
-//                //node.params =
+                //                node.dowhat = json_one_thing["id"].toInt();
+                //                //node.params =
             }
             ti.nodes.append(node);
         }
@@ -458,4 +478,17 @@ void MsgCenter::mapLoad()
     iniRequsttMsg(request);
     request["todo"] = MSG_TODO_MAP_GET_MAP;
     requestWaitResponse(request);
+}
+
+QList<QObject *> MsgCenter::getFloors()
+{
+    QList<QObject *> qsl;
+    auto pp = g_onemap.getFloors();
+    foreach (auto p, pp) {
+        FloorModelData *f = new FloorModelData;
+        f->setMyId(p->getId());
+        f->setName(p->getName());
+        qsl<<f;
+    }
+    return qsl;
 }

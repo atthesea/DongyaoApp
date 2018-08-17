@@ -21,6 +21,7 @@ Page {
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
+                    pwdInput.text = ""
                     adminPwdInput.open()
                 }
             }
@@ -124,7 +125,7 @@ Page {
         }
         onSubTaskSuccess:{
             name.text = qsTr("finish ...")
-            loadpageTemp.loadfinish();
+            window.showMain()
         }
 
         onErr:{

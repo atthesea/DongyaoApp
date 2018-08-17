@@ -11,6 +11,7 @@ public:
     explicit DispatchConnection(QObject *parent = nullptr);
     ~DispatchConnection();
 
+    bool isConnect(){return m_webSocket.state() == QAbstractSocket::ConnectedState; }
     void connToServer(QString _ip, int _port);
     void reset(QString _ip, int _port);
     bool send(const QJsonObject &json);
@@ -26,6 +27,8 @@ private:
     QAtomicInt sendQueueNumber;
     QString ip;
     int port;
+
+    bool quit;
 };
 
 #endif // DISPATCHCONNECTION_H

@@ -33,6 +33,11 @@ void WmsConnection::connToServer(QString ip,int port)
     emit sig_request_all_success();
 }
 
+bool WmsConnection::getIsConnect()
+{
+    return m_webSocket.state() == QAbstractSocket::ConnectedState;
+}
+
 void WmsConnection::slot_read(QString msg)
 {
     //TODO:
