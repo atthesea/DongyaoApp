@@ -96,10 +96,14 @@ public:
     Q_INVOKABLE void subAgvStatus();
 
     Q_INVOKABLE QList<QObject *> getFloors();
+    Q_INVOKABLE QList<QObject *> getFloorsLines(int floorId);
 
     //获取任务列表
     Q_INVOKABLE QList<TASK_INFO> getTaskInfoModel(){return agvtaskinfos;}
     Q_INVOKABLE bool getIsMapLoaded(){return isMapLoaded;}
+
+    Q_INVOKABLE int getBkgWidth(int floorid);
+    Q_INVOKABLE int getBkgHeight(int floorid);
 signals:
     //连接状态改变
     void sig_connection_connected();

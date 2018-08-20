@@ -4,13 +4,12 @@ import QtQuick.Layouts 1.11
 import "../common" as COMMON
 
 
-Page {
+Rectangle {
     id:loadpageTemp
     signal loadfinish();
 
-    header: ToolBar{
+    COMMON.QyhHeader{
         id:toolBar
-        contentHeight:30
 
         COMMON.SettingsIcon {
             width: 28
@@ -83,7 +82,8 @@ Page {
         anchors.top: animated.bottom
     }
 
-    Component.onCompleted: {
+    function init(){
+        console.debug("load page init")
         g_config.load()
     }
 

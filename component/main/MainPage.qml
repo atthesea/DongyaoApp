@@ -4,18 +4,17 @@ import QtQuick.Extras 1.4
 import QtQuick.Layouts 1.11
 import "../common" as COMMON
 import "./FloorCreate.js" as FloorCreator;
-import "./TaskCreate.js" as TaskCreator;
 
-Page {
+Rectangle {
     id:mainPage
     property var floors:[]
     property var taskpage: null
 
-    header: ToolBar{
+    COMMON.QyhHeader{
         id:toolBar
-        contentHeight:30
 
         COMMON.SettingsIcon {
+            id:settingBtn
             width: 28
             height: 28
             anchors.verticalCenter: parent.verticalCenter
@@ -113,46 +112,33 @@ Page {
 
     ListModel {
         id: btnModel
-        ListElement {tag: qsTr("任务");myid:0}
+        ListElement {tag: qsTr("任务");myId:0}
     }
 
+    SwipeView{
+        y:40
+        width: parent.width
+        height: parent.height-40
+        id:floorsSwipeView
+        Task{
+            id:taskpage
+        }
+    }
 
-    GridView{
-        id:gridView;
-        model:btnModel
-        delegate:COMMON.QyhButton {
-            label: modelData
-            clicked:{
-                showFloorOrTask(modelData);
+    function init(){
+        var floors = msgCenter.getFloors();
+        for(var ii = 0;ii<floors.length;++ii){
+            btnModel.append({tag:floors[ii].name,myId:floors[ii].myId});
+            FloorCreator.myname = floors[ii].name;
+            FloorCreator.myid = floors[ii].myId;
+            FloorCreator.createFloorObject();
+            if(g_config.getFloor() === floors[ii].name)
+            {
+                floorsSwipeView.currentIndex = ii+1;
             }
         }
-    }
 
-    Task{
-        //TODO
-        id:taskView;
-        visible: false
-    }
-
-
-    Component.onCompleted: {
-        var floors = msgCenter.getFloorNames();
-        for(var ii = 0;ii<floors.length;++i){
-            btnModel.append({tag:floors[ii].name;myid:floors[ii].myId});
-        }
-
-//        btnModel.push_back(qsTr("任务"));
-//        gridView.model =  floors;
-    }
-
-    function showFloorOrTask(floorname){
-        if(floorname === qsTr("任务"))
-        {
-
-        }else{
-
-        }
-
+        taskpage.init();
     }
 
     Connections{

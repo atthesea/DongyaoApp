@@ -2,7 +2,7 @@ import QtQuick 2.0
 import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.11
 
-Page {
+Rectangle {
     //三个配置，一个确认 一个取消按钮
     GridLayout{
         anchors.centerIn: parent
@@ -69,7 +69,8 @@ Page {
         }
     }
 
-    Component.onCompleted: {
+    function init(){
+        console.debug("admin page complete")
         var f = g_config.getFloor()
         if(f === "floor1")
             floor_cbb_input.currentIndex = 0;

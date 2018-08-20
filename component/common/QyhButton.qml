@@ -10,11 +10,11 @@ Item {
 
     BorderImage {
         anchors { fill: container; leftMargin: -6; topMargin: -6; rightMargin: -8; bottomMargin: -8 }
-        source: 'images/box-shadow.png'
+        source: 'qrc:/image/box-shadow.png'
         border.left: 10; border.top: 10; border.right: 10; border.bottom: 10
     }
 
-    Image { anchors.fill: parent; source: "images/cardboard.png"; antialiasing: true }
+    Image { anchors.fill: parent; source: "qrc:/image/cardboard.png"; antialiasing: true }
 
     Rectangle {
         anchors.fill: container; color: container.tint; visible: container.tint != ""

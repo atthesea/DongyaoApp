@@ -6,6 +6,7 @@
 #include <iostream>
 #include "protocol.h"
 #include "floormodeldata.h"
+#include "linemodeldata.h"
 
 #include <QImage>
 
@@ -487,8 +488,55 @@ QList<QObject *> MsgCenter::getFloors()
     foreach (auto p, pp) {
         FloorModelData *f = new FloorModelData;
         f->setMyId(p->getId());
-        f->setName(p->getName());
+        f->setName(QString::fromStdString(p->getName()));
         qsl<<f;
     }
     return qsl;
+}
+
+QList<QObject *> MsgCenter::getFloorsLines(int floorId)
+{
+    QList<QObject *> qsl;
+    auto floor = g_onemap.getFloorById(floorId);
+    if(floor!=nullptr){
+        auto pp = floor->getPaths();
+        foreach (auto p, pp) {
+            auto path = g_onemap.getPathById(p);
+            if(path!=nullptr){
+                auto start = g_onemap.getPointById(path->getStart());
+                auto end = g_onemap.getPointById(path->getEnd());
+
+                if(start!=nullptr && end!=nullptr){
+                    LineModelData *l = new LineModelData;
+                    l->setMyid(path->getId());
+                    l->setStartX(start->getX());
+                    l->setStartY(start->getY());
+                    l->setEndX(end->getX());
+                    l->setEndY(end->getY());
+                    l->setP1x(path->getP1x());
+                    l->setP1y(path->getP1y());
+                    l->setP2x(path->getP2x());
+                    l->setP2y(path->getP2y());
+                    l->setType(static_cast<int>(path->getPathType()));
+                    qsl<<l;
+                }
+            }
+        }
+    }
+
+    return qsl;
+}
+
+int MsgCenter::getBkgWidth(int floorid)
+{
+    auto floor = g_onemap.getFloorById(floorid);
+    auto bkg = g_onemap.getBackgroundById(floor->getBkg());
+    return bkg->getWidth();
+}
+
+int MsgCenter::getBkgHeight(int floorid)
+{
+    auto floor = g_onemap.getFloorById(floorid);
+    auto bkg = g_onemap.getBackgroundById(floor->getBkg());
+    return bkg->getHeight();
 }

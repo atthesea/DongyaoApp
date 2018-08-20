@@ -16,45 +16,63 @@ ApplicationWindow {
     height: 480
     title: qsTr("DongyaoApp")
 
-    StackView{
-        id: stack
-        initialItem: mainpage
-        anchors.fill: parent
-    }
+    property bool hasInitLoad: false
+    property bool hasInitAdmin: false
+    property bool hasInitMain: false
 
-    Component {
+    //主界面
+    MAIN.MainPage{
         id: mainpage
-
-        MAIN.MainPage{
-
-        }
+        anchors.fill: parent
+        visible: false
     }
 
-    Component{
+    //載入界面
+    LOAD.LoadPage{
         id: loadpage
-        LOAD.LoadPage{
+        anchors.fill: parent
+        visible: false
+    }
 
+    //管理员界面
+    ADMIN.AdminPage{
+        id:adminpage
+        anchors.fill: parent
+        visible: false
+    }
+
+    function showLoading(){
+        loadpage.visible =  true;
+        mainpage.visible = false;
+        adminpage.visible = false;
+        if(!window.hasInitLoad){
+            loadpage.init();
+            window.hasInitLoad = true
         }
     }
 
-    Component{
-        id:adminpage
-        ADMIN.AdminPage{
+    function showAdmin(){
+        loadpage.visible =  true;
+        mainpage.visible = false;
+        adminpage.visible = false;
+        if(!window.hasInitAdmin){
+            adminpage.init();
+            window.hasInitAdmin = true
+        }
+    }
 
+    function showMain(){
+        loadpage.visible =  false;
+        mainpage.visible = true;
+        adminpage.visible = false;
+        if(!window.hasInitMain){
+            mainpage.init();
+            window.hasInitMain = true
         }
     }
 
     Component.onCompleted: {
-        stack.push(loadpage);
+        showLoading();
     }
 
-    function showAdmin()
-    {
-        stack.push(adminpage);
-    }
-
-    function showMain()
-    {
-        stack.push(mainpage);
-    }
 }

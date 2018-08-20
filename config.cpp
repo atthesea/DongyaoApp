@@ -19,21 +19,21 @@ void Config::load()
     QFile file(path + "/dongyao_app_config.json");
     //如果文件不存在，将assets下的config.json复制到该目录下
     //if(!file.exists()){
-        QFile asseetsConfigFile("assets:/dongyao_app_config.json");
-        if(!asseetsConfigFile.open(QIODevice::ReadOnly)){
-            emit loadFail();
-            return ;
-        }
-        QByteArray vala = asseetsConfigFile.readAll();
-        qDebug()<<"vala length = "<<vala.length();
-        qDebug()<<"vala = "<<QString::fromUtf8(vala);
-        asseetsConfigFile.close();
-        if(!file.open(QIODevice::ReadWrite | QIODevice::Text)){
-            emit loadFail();
-            return ;
-        }
-        file.write(vala);
-        file.close();
+    QFile asseetsConfigFile("assets:/dongyao_app_config.json");
+    if(!asseetsConfigFile.open(QIODevice::ReadOnly)){
+        emit loadFail();
+        return ;
+    }
+    QByteArray vala = asseetsConfigFile.readAll();
+    qDebug()<<"vala length = "<<vala.length();
+    qDebug()<<"vala = "<<QString::fromUtf8(vala);
+    asseetsConfigFile.close();
+    if(!file.open(QIODevice::ReadWrite | QIODevice::Text)){
+        emit loadFail();
+        return ;
+    }
+    file.write(vala);
+    file.close();
     //}
 #else
     QFile file( "dongyao_app_config.json" );
@@ -45,11 +45,11 @@ void Config::load()
     QByteArray val = file.readAll();
     file.close();
 
-    QString ss(val);
-    qDebug()<<"ss length = "<<ss.length();
-    for(int i=0;i<ss.length()/100+1;++i){
-        qDebug()<<" "<<ss.mid(i*100,100);
-    }
+    //QString ss(val);
+    //qDebug()<<"ss length = "<<ss.length();
+    //    for(int i=0;i<ss.length()/100+1;++i){
+    //        qDebug()<<" "<<ss.mid(i*100,100);
+    //    }
     //qDebug()<<"ss = "<<ss;
 
     QJsonDocument d = QJsonDocument::fromJson(val);
