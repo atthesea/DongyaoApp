@@ -2,12 +2,10 @@
 #include <QTime>
 #include <QCoreApplication>
 
-QString g_strExeRoot;
-Config g_config;
-MsgCenter msgCenter;
-USER_INFO current_user_info;
-OneMap g_onemap;
-WmsConnection g_wmsConnection;
+Config *g_config = nullptr;
+MsgCenter *msgCenter = nullptr;
+OneMap *g_onemap = nullptr;
+WmsConnection *g_wmsConnection = nullptr;
 
 void QyhSleep(int msec)
 {

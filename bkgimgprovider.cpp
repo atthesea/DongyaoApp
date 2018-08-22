@@ -10,10 +10,10 @@ BkgImgProvider::BkgImgProvider() :QQuickImageProvider(QQuickImageProvider::Pixma
 QImage BkgImgProvider::requestImage(const QString &id, QSize *size, const QSize& requestedSize)
 {
     QImage img;
-    auto floor = g_onemap.getFloorById(id.toInt());
+    auto floor = g_onemap->getFloorById(id.toInt());
     if(floor!=nullptr){
         int bkgId = floor->getBkg();
-        auto bkg = g_onemap.getBackgroundById(bkgId);
+        auto bkg = g_onemap->getBackgroundById(bkgId);
 
         if(bkg!=nullptr){
             QByteArray ba(bkg->getImgData(),bkg->getImgDataLen());
@@ -37,10 +37,10 @@ QImage BkgImgProvider::requestImage(const QString &id, QSize *size, const QSize&
 QPixmap BkgImgProvider::requestPixmap(const QString &id, QSize *size, const QSize& requestedSize)
 {
     QImage img;
-    auto floor = g_onemap.getFloorById(id.toInt());
+    auto floor = g_onemap->getFloorById(id.toInt());
     if(floor!=nullptr){
         int bkgId = floor->getBkg();
-        auto bkg = g_onemap.getBackgroundById(bkgId);
+        auto bkg = g_onemap->getBackgroundById(bkgId);
 
         if(bkg!=nullptr){
             QByteArray ba(bkg->getImgData(),bkg->getImgDataLen());

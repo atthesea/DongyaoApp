@@ -214,3 +214,27 @@ std::list<MapGroup *> OneMap::getGroups()
     return groups;
 }
 
+int OneMap::getFloor(int spiritID)
+{
+    int floor = -1;
+    std::list<MapFloor *> floors = getFloors();
+    for(auto onefloor:floors)
+    {
+        std::list<int> pointlist = onefloor->getPoints();
+
+        if(std::find(pointlist.begin(), pointlist.end(), spiritID) != pointlist.end())
+        {
+            floor = std::stoi(onefloor->getName().substr(6));
+            break;
+        }
+
+        std::list<int> pathlist = onefloor->getPaths();
+
+        if (std::find(pathlist.begin(), pathlist.end(), spiritID) != pathlist.end())
+        {
+            floor = std::stoi(onefloor->getName().substr(6));
+            break;
+        }
+    }
+    return floor;
+}

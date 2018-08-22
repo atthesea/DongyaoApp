@@ -18,12 +18,16 @@ int main(int argc, char *argv[])
     qmlRegisterType<StorageData>( "QyhCustomComponent", 1, 0, "StorageData");
     qmlRegisterType<Task>( "QyhCustomComponent", 1, 0, "Task");
 
+    g_config = new Config;
+    g_onemap = new OneMap;
+    msgCenter = new MsgCenter;
+    g_wmsConnection = new WmsConnection;
 
     QQmlApplicationEngine engine;
     QQmlContext *ctxt = engine.rootContext();
-    ctxt->setContextProperty("g_config", &g_config);
-    ctxt->setContextProperty("g_wmsConnection", &g_wmsConnection);
-    ctxt->setContextProperty("msgCenter", &msgCenter);
+    ctxt->setContextProperty("g_config", g_config);
+    ctxt->setContextProperty("g_wmsConnection", g_wmsConnection);
+    ctxt->setContextProperty("msgCenter", msgCenter);
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
     BkgImgProvider *imageProvider = new BkgImgProvider;
     engine.addImageProvider("bkgs", imageProvider);

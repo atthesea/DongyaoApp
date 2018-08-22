@@ -7,8 +7,22 @@
 #include "protocol.h"
 #include "floormodeldata.h"
 #include "linemodeldata.h"
-
+#include "agvpositionmodeldata.h"
 #include <QImage>
+
+static struct
+{
+    int id;
+    QColor color;
+} COMMON_COLOR_TABLE[] =
+{
+{0,Qt::red},
+{1,Qt::green},
+{2,Qt::blue},
+{3,Qt::cyan},
+{4,Qt::magenta},
+{5,Qt::yellow},
+};
 
 MsgCenter::MsgCenter(QObject *parent) : QObject(parent),
     quit(false),
@@ -28,7 +42,7 @@ void MsgCenter::init()
     connect(&dispatch_connection,SIGNAL(sig_connect()),this,SIGNAL(sig_connection_connected()));
     connect(&dispatch_connection,SIGNAL(sig_disconnect()),this,SIGNAL(sig_connection_disconnected()));
     connect(&dispatch_connection,SIGNAL(sig_onRead(QString)),this,SLOT(push(QString)));
-    dispatch_connection.connToServer(g_config.getDispatch_ip(),g_config.getDispatch_port());
+    dispatch_connection.connToServer(g_config->getDispatch_ip(),g_config->getDispatch_port());
 
     //响应消息处理的线程
     thread_msg_process = std::thread([&](){
@@ -54,18 +68,18 @@ void MsgCenter::init()
 
 void MsgCenter::resetIpPort(QString ip,int port)
 {
-    g_config.setDispatch_ip(ip);
-    g_config.setDispatch_port(port);
-    dispatch_connection.reset(g_config.getDispatch_ip(),g_config.getDispatch_port());
+    g_config->setDispatch_ip(ip);
+    g_config->setDispatch_port(port);
+    dispatch_connection.reset(g_config->getDispatch_ip(),g_config->getDispatch_port());
 }
 
 QString MsgCenter::getServerIp()
 {
-    return g_config.getDispatch_ip();
+    return g_config->getDispatch_ip();
 }
 int MsgCenter::getServerPort()
 {
-    return g_config.getDispatch_port();
+    return g_config->getDispatch_port();
 }
 
 //入队响应消息
@@ -179,13 +193,7 @@ void MsgCenter::response_null(const QJsonObject &response)
 
 void MsgCenter::response_user_login(const QJsonObject &response)
 {
-    current_user_info.id = response["id"].toInt();
-    current_user_info.role = response["role"].toInt();
-    current_user_info.status = response["status"].toInt();
-    current_user_info.username = response["username"].toString();
-    current_user_info.password = response["password"].toString();
-
-    emit loginSuccess(current_user_info.role);
+    emit loginSuccess(response["role"].toInt());
 }
 
 void MsgCenter::response_map_get(const QJsonObject &response)
@@ -193,7 +201,7 @@ void MsgCenter::response_map_get(const QJsonObject &response)
     //TODO:
     QJsonDocument d(response);
     qDebug()<<"get map json length = "<<d.toJson().length();
-    g_onemap.clear();
+    g_onemap->clear();
     //地图信息
     auto ps = response["points"].toArray();
     for (int i = 0; i < ps.size(); ++i)
@@ -217,7 +225,7 @@ void MsgCenter::response_map_get(const QJsonObject &response)
         std::string lineId = station["lineId"].toString().toStdString();
 
         MapPoint *p = new MapPoint(id,name,(MapPoint::Map_Point_Type)station_type,x,y,realX,realY,realA,labelXoffset,labelYoffset,mapchange,locked,ip,port,agvType,lineId);
-        g_onemap.addSpirit(p);
+        g_onemap->addSpirit(p);
     }
 
     //2.解析线路
@@ -238,7 +246,7 @@ void MsgCenter::response_map_get(const QJsonObject &response)
         bool locked = line["locked"].toBool();
         double speed = line["speed"].toDouble();
         MapPath *p = new MapPath(id,name,start,end,(MapPath::Map_Path_Type)type,length,p1x,p1y,p2x,p2y,locked,speed);
-        g_onemap.addSpirit(p);
+        g_onemap->addSpirit(p);
     }
 
     //4.解析背景图片
@@ -262,7 +270,7 @@ void MsgCenter::response_map_get(const QJsonObject &response)
         MapBackground *p = new MapBackground(id,name,data, lenlen,width,height,filename);
         p->setX(x);
         p->setY(y);
-        g_onemap.addSpirit(p);
+        g_onemap->addSpirit(p);
     }
 
     //3.解析楼层
@@ -290,7 +298,7 @@ void MsgCenter::response_map_get(const QJsonObject &response)
         for (int k = 0; k < paths.size(); ++k) {
             p->addPath(paths[k].toInt());
         }
-        g_onemap.addSpirit(p);
+        g_onemap->addSpirit(p);
     }
 
     //5.解析block
@@ -305,7 +313,7 @@ void MsgCenter::response_map_get(const QJsonObject &response)
         for(int k=0;k<spirits.size();++k){
             p->addSpirit(spirits[k].toInt());
         }
-        g_onemap.addSpirit(p);
+        g_onemap->addSpirit(p);
     }
 
     //6.解析group
@@ -322,11 +330,11 @@ void MsgCenter::response_map_get(const QJsonObject &response)
         for(int k=0;k<spirits.size();++k){
             p->addSpirit(spirits[k].toInt());
         }
-        g_onemap.addSpirit(p);
+        g_onemap->addSpirit(p);
     }
 
     int max_id = response["maxId"].toInt();
-    g_onemap.setMaxId(max_id);
+    g_onemap->setMaxId(max_id);
     isMapLoaded = true;
     emit mapGetSuccess();
 }
@@ -334,16 +342,65 @@ void MsgCenter::response_map_get(const QJsonObject &response)
 
 void MsgCenter::pub_agv_position(const QJsonObject &response)
 {
+    QMutexLocker l(&pathMtx);
+    QMutexLocker l2(&agvMtx);
+    draw_paths.clear();
+    draw_agvs.clear();
     auto json_agvs = response["agvs"].toArray();
-    for(int i=0;i<json_agvs.size();++i){
+    for(int i=0;i<json_agvs.size();++i)
+    {
         QJsonObject json_one_agv = json_agvs[i].toObject();
         int id = json_one_agv["id"].toInt();
         QString name = json_one_agv["name"].toString();
         double x = json_one_agv["x"].toDouble();
         double y = json_one_agv["y"].toDouble();
         double theta = json_one_agv["theta"].toDouble();
-        emit sig_pub_agv_position(id,name,x,y,theta);
+        int floor = json_one_agv["floor"].toInt();
+        //emit sig_pub_agv_position(id,name,x,y,theta,floor);
+
+        AgvPositionModelData *a = new AgvPositionModelData;
+        a->setMyid(id);
+        a->setColor(COMMON_COLOR_TABLE[id%6].color);
+        a->setFloorid(floor);
+        a->setName(name);
+        a->setTheta(theta);
+        a->setX(x);
+        a->setY(y);
+        draw_agvs.append(a);
+
+        QString occurs = json_one_agv["occurs"].toString();
+        QStringList ocs = occurs.split(";");
+
+        foreach (auto oc, ocs) {
+            int lineId = oc.toInt();
+            auto path = g_onemap->getPathById(lineId);
+            if(path == nullptr)continue;
+            auto start = g_onemap->getPointById(path->getStart());
+            auto end = g_onemap->getPointById(path->getEnd());
+            if(start == nullptr || end == nullptr)continue;
+            auto floorId = g_onemap->getFloor(lineId);
+            auto floorptr = g_onemap->getFloorById(floorId);
+            if(floorptr == nullptr)continue;
+            auto bkgptr = g_onemap->getBackgroundById(floorptr->getBkg());
+            if(bkgptr==nullptr)continue;
+
+            LineModelData *l = new LineModelData;
+            l->setColor(COMMON_COLOR_TABLE[id%6].color);
+            l->setMyid(lineId);
+            l->setStartX(start->getX() - bkgptr->getX());
+            l->setStartY(start->getY() - bkgptr->getY());
+            l->setEndX(end->getX() - bkgptr->getX());
+            l->setEndY(end->getY() - bkgptr->getY());
+            l->setP1x(path->getP1x() - bkgptr->getX());
+            l->setP1y(path->getP1y() - bkgptr->getY());
+            l->setP2x(path->getP2x() - bkgptr->getX());
+            l->setP2y(path->getP2y() - bkgptr->getY());
+            l->setType(static_cast<int>( path->getPathType()));
+            l->setFloor(g_onemap->getFloor(lineId));
+            draw_paths.append(l);
+        }
     }
+    emit sig_update_agv_lines();
 }
 
 void MsgCenter::response_task_sub(const QJsonObject &response)
@@ -354,10 +411,10 @@ void MsgCenter::response_task_sub(const QJsonObject &response)
 bool MsgCenter::hasBkg(int floorId)
 {
     QImage img;
-    auto floor = g_onemap.getFloorById(floorId);
+    auto floor = g_onemap->getFloorById(floorId);
     if(floor!=nullptr){
         int bkgId = floor->getBkg();
-        auto bkg = g_onemap.getBackgroundById(bkgId);
+        auto bkg = g_onemap->getBackgroundById(bkgId);
 
         if(bkg!=nullptr){
             QByteArray ba(bkg->getImgData(),bkg->getImgDataLen());
@@ -484,7 +541,7 @@ void MsgCenter::mapLoad()
 QList<QObject *> MsgCenter::getFloors()
 {
     QList<QObject *> qsl;
-    auto pp = g_onemap.getFloors();
+    auto pp = g_onemap->getFloors();
     foreach (auto p, pp) {
         FloorModelData *f = new FloorModelData;
         f->setMyId(p->getId());
@@ -494,49 +551,18 @@ QList<QObject *> MsgCenter::getFloors()
     return qsl;
 }
 
-QList<QObject *> MsgCenter::getFloorsLines(int floorId)
-{
-    QList<QObject *> qsl;
-    auto floor = g_onemap.getFloorById(floorId);
-    if(floor!=nullptr){
-        auto pp = floor->getPaths();
-        foreach (auto p, pp) {
-            auto path = g_onemap.getPathById(p);
-            if(path!=nullptr){
-                auto start = g_onemap.getPointById(path->getStart());
-                auto end = g_onemap.getPointById(path->getEnd());
-
-                if(start!=nullptr && end!=nullptr){
-                    LineModelData *l = new LineModelData;
-                    l->setMyid(path->getId());
-                    l->setStartX(start->getX());
-                    l->setStartY(start->getY());
-                    l->setEndX(end->getX());
-                    l->setEndY(end->getY());
-                    l->setP1x(path->getP1x());
-                    l->setP1y(path->getP1y());
-                    l->setP2x(path->getP2x());
-                    l->setP2y(path->getP2y());
-                    l->setType(static_cast<int>(path->getPathType()));
-                    qsl<<l;
-                }
-            }
-        }
-    }
-
-    return qsl;
-}
-
 int MsgCenter::getBkgWidth(int floorid)
 {
-    auto floor = g_onemap.getFloorById(floorid);
-    auto bkg = g_onemap.getBackgroundById(floor->getBkg());
+    auto floor = g_onemap->getFloorById(floorid);
+    if(floor == nullptr)return 800;
+    auto bkg = g_onemap->getBackgroundById(floor->getBkg());
     return bkg->getWidth();
 }
 
 int MsgCenter::getBkgHeight(int floorid)
 {
-    auto floor = g_onemap.getFloorById(floorid);
-    auto bkg = g_onemap.getBackgroundById(floor->getBkg());
+    auto floor = g_onemap->getFloorById(floorid);
+    if(floor == nullptr)return 640;
+    auto bkg = g_onemap->getBackgroundById(floor->getBkg());
     return bkg->getHeight();
 }

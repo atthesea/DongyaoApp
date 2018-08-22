@@ -31,6 +31,8 @@ public:
     //复制地图（深copy）
     OneMap* clone();
 
+    int getFloor(int spiritID);
+
     std::vector<int> getStations();
     std::list<MapFloor *> getFloors();
     std::list<MapPath *> getRootPaths();

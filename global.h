@@ -8,12 +8,10 @@
 #include "mapmap/onemap.h"
 #include "wmsconnection.h"
 
-extern QString g_strExeRoot;
-extern Config g_config;
-extern MsgCenter msgCenter;
-extern USER_INFO current_user_info;
-extern OneMap g_onemap;
-extern WmsConnection g_wmsConnection;
+extern Config *g_config;
+extern MsgCenter *msgCenter;
+extern OneMap *g_onemap;
+extern WmsConnection *g_wmsConnection;
 //全局函数
 
 //非阻塞的sleep[只阻塞当前线程] 最小单位是10ms

@@ -31,9 +31,7 @@ SOURCES += \
     mapmap/mappoint.cpp \
     mapmap/mapspirit.cpp \
     mapmap/onemap.cpp \
-    bkgimgprovider.cpp \
-    floormodeldata.cpp \
-    linemodeldata.cpp
+    bkgimgprovider.cpp
 
 RESOURCES += qml.qrc
 
@@ -69,7 +67,8 @@ HEADERS += \
     mapmap/onemap.h \
     bkgimgprovider.h \
     floormodeldata.h \
-    linemodeldata.h
+    linemodeldata.h \
+    agvpositionmodeldata.h
 
 # assuming you want to deploy qml/foo/main.qml file, you need to add the flowing lines to your .pro/.pri file(s)
 deployment.files=dongyao_app_config.json

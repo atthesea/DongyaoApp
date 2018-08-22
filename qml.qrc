@@ -8,12 +8,6 @@
         <file>component/main/Floor.qml</file>
         <file>component/main/Task.qml</file>
         <file>component/main/FloorCreate.js</file>
-        <file>component/main/AgvLineCreate.js</file>
-        <file>component/main/AgvStationCreate.js</file>
-        <file>component/main/AgvCarCreate.js</file>
-        <file>component/main/AgvCar.qml</file>
-        <file>component/main/AgvLine.qml</file>
-        <file>component/main/AgvStation.qml</file>
         <file>component/common/BusyIndicator.qml</file>
         <file>component/common/Button.qml</file>
         <file>gif/loading.gif</file>

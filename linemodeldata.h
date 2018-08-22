@@ -2,6 +2,7 @@
 #define LINEMODELDATA_H
 
 #include <QObject>
+#include <QColor>
 
 class LineModelData : public QObject
 {
@@ -16,8 +17,10 @@ class LineModelData : public QObject
     Q_PROPERTY(int p2y READ p2y WRITE setP2y NOTIFY p2yChanged)
     Q_PROPERTY(int type READ type WRITE setType NOTIFY typeChanged)
     Q_PROPERTY(int myid READ myid WRITE setMyid NOTIFY myidChanged)
+    Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged)
+    Q_PROPERTY(int floor READ floor WRITE setFloor NOTIFY floorChanged)
 public:
-    explicit LineModelData(QObject *parent = nullptr);
+    explicit LineModelData(QObject *parent = nullptr): QObject(parent){}
 
     int startX(){return m_startX;}
     int startY(){return m_startY;}
@@ -29,6 +32,8 @@ public:
     int p2y(){return m_p2y;}
     int type(){return m_type;}
     int myid(){return m_myid;}
+    QColor color(){return m_color;}
+    int floor(){return m_floor;}
 
     void setStartX(int _startX){m_startX = _startX;emit startXChanged(_startX);}
     void setStartY(int _startY){m_startY = _startY;emit startYChanged(_startY);}
@@ -40,6 +45,8 @@ public:
     void setP2y(int _p2y){m_p2y = _p2y;emit p2yChanged(_p2y);}
     void setType(int _type){m_type = _type;emit typeChanged(_type);}
     void setMyid(int _myid){m_myid = _myid;emit myidChanged(_myid);}
+    void setColor(QColor _color){m_color=_color;emit colorChanged(_color);}
+    void setFloor(int _floor){m_floor=_floor;emit floorChanged(_floor);}
 signals:
     void startXChanged(int _startX);
     void startYChanged(int _startY);
@@ -51,7 +58,8 @@ signals:
     void p2yChanged(int _p2y);
     void typeChanged(int _type);
     void myidChanged(int _myid);
-
+    void colorChanged(QColor _color);
+    void floorChanged(int _floor);
 public slots:
 
 private:
@@ -65,6 +73,8 @@ private:
     int m_p2y;
     int m_type;
     int m_myid;
+    int m_floor;
+    QColor m_color;
 };
 
 #endif // LINEMODELDATA_H

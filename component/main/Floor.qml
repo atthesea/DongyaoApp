@@ -1,6 +1,6 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.4
-import "./AgvLineCreate.js" as AgvLineCreator;
+
 Page {
     id:floorTemp
     property int myid:0;
@@ -80,14 +80,19 @@ Page {
                 PropertyChanges { target: floorFlickable;contentWidth:floorTemp.width*floorTemp.scaleScale;contentHeight:floorTemp.height*floorTemp.scaleScale;contentX:floorFlickable.notFullScreenX;contentY:floorFlickable.notFullScreenY;scaleXX:floorTemp.scaleX*floorTemp.scaleScale;scaleYY:floorTemp.scaleY*floorTemp.scaleScale}
             }
         ]
-        transitions: Transition {
-            NumberAnimation { properties: "scale"; duration: 400 }
-            NumberAnimation { properties: "width"; duration: 400 }
-            NumberAnimation { properties: "height"; duration: 400 }
-            NumberAnimation { properties: "contentWidth"; duration: 400 }
-            NumberAnimation { properties: "contentHeight"; duration: 400 }
-            NumberAnimation { properties: "contentX"; duration: 400 }
-            NumberAnimation { properties: "contentY"; duration: 400 }
+
+//        transitions: Transition {
+//            NumberAnimation { properties: "scale"; duration: 400 }
+//            NumberAnimation { properties: "width"; duration: 400 }
+//            NumberAnimation { properties: "height"; duration: 400 }
+//            NumberAnimation { properties: "contentWidth"; duration: 400 }
+//            NumberAnimation { properties: "contentHeight"; duration: 400 }
+//            NumberAnimation { properties: "contentX"; duration: 400 }
+//            NumberAnimation { properties: "contentY"; duration: 400 }
+//        }
+
+        onStateChanged: {
+            lineAndAgvCanvas.requestPaint();
         }
 
         Image {
@@ -116,45 +121,78 @@ Page {
                 }
             }
 
+            Canvas{
+                id:lineAndAgvCanvas
+                width: parent.width
+                height: parent.height
+                x:0
+                y:0
 
+                onPaint: {
+                    var ctx = getContext("2d");
+                    console.log("========================================================   START")
+                    console.log("========================================================clear width=",lineAndAgvCanvas.width)
+                    console.log("========================================================clear height=",lineAndAgvCanvas.height)
+                    ctx.save();
+                    ctx.clearRect(0, 0, lineAndAgvCanvas.width, lineAndAgvCanvas.height);
+                    //draw lines
+                    var paths = msgCenter.getDrawPaths();
+                    for(var ii = 0;ii<paths.length;++ii)
+                    {
+                        var path = paths[ii];
+                        if(path.floor === floorTemp.myid){
+                            console.log("================================================ii="+ii)
+                            ctx.strokeStyle=path.color;
+                            ctx.moveTo(path.startX/floorFlickable.scaleXX,path.startY/floorFlickable.scaleYY);
+                            console.log("move to="+path.startX/floorFlickable.scaleXX+","+path.startY/floorFlickable.scaleYY)
+                            if(path.type === 0){
+                                ctx.lineTo(path.endX/floorFlickable.scaleXX,path.endY/floorFlickable.scaleYY);
+                                console.log("line to="+path.endX/floorFlickable.scaleXX+","+path.endY/floorFlickable.scaleYY)
+                            }else if(path.type === 1){
+                                ctx.quadraticCurveTo(path.p1x/floorFlickable.scaleXX,path.p1y/floorFlickable.scaleYY,path.endX/floorFlickable.scaleXX,path.endY/floorFlickable.scaleYY);
+                                console.log("quadratic to="+path.p1x/floorFlickable.scaleXX+","+path.p1y/floorFlickable.scaleYY+"  "+path.endX/floorFlickable.scaleXX+","+path.endY/floorFlickable.scaleYY)
+                            }else if(path.type === 2){
+                                console.log("quadratic to="+path.p1x/floorFlickable.scaleXX+","+path.p1y/floorFlickable.scaleYY+"  "+path.p2x/floorFlickable.scaleXX+","+path.p2y/floorFlickable.scaleYY+"  "+path.endX/floorFlickable.scaleXX+","+path.endY/floorFlickable.scaleYY)
+                                ctx.bezierCurveTo(path.p1x/floorFlickable.scaleXX,path.p1y/floorFlickable.scaleYY,path.p2x/floorFlickable.scaleXX,path.p2y/floorFlickable.scaleYY,path.endX/floorFlickable.scaleXX,path.endY/floorFlickable.scaleYY);
+                            }
+                            ctx.stroke();
+                        }
+                    }
+                    ctx.restore();
+                    console.log("======================================================== END")
+//                    //draw Agvs
+//                    var agvs = msgCenter.getDrawAgvs();
+//                    for(var kk = 0;kk<agvs.length;++kk)
+//                    {
+//                        var agv = agvs[kk];
+//                        if(agv.floorid === floorTemp.myid){
+//                            //TODO
+//                            ctx.stroke();
+//                        }
+//                    }
+                }
+
+                Connections{
+                    target: msgCenter
+                    onSig_update_agv_lines:{
+                        lineAndAgvCanvas.requestPaint()
+                    }
+                }
+            }
         }
     }
 
-
-
-    //载入其他数据
-    Component.onCompleted: {
-
-        //1.載入背景图片 picture已经载入，要求必须有背景图片
-        //要求必须存在背景图片。并且路径站点都包含在背景图片内
-        //获取背景图片的设置高度
+    onWidthChanged: {
         floorTemp.scaleX = msgCenter.getBkgWidth(myid)/floorTemp.width
-        floorTemp.scaleY = msgCenter.getBkgHeight(myid)/floorTemp.height
-        floorFlickable.scaleXX = floorTemp.scaleX
-        floorFlickable.scaleYY = floorTemp.scaleY
-
-        //2.载入线路[站点不显示]
-        var paths = msgCenter.getFloorsLines(myid);
-        for(var ii = 0;ii<paths.length;++ii){
-            AgvLineCreator.startX = paths[ii].startX;
-            AgvLineCreator.startY = paths[ii].startY;
-            AgvLineCreator.endX = paths[ii].endX;
-            AgvLineCreator.endY = paths[ii].endY;
-            AgvLineCreator.p1x = paths[ii].p1x;
-            AgvLineCreator.p1y = paths[ii].p1y;
-            AgvLineCreator.p2x = paths[ii].p2x;
-            AgvLineCreator.p2y = paths[ii].p2y;
-            AgvLineCreator.type = paths[ii].type;
-            AgvLineCreator.myid = paths[ii].myid;
-            AgvLineCreator.createLineObject();
-        }
-
-
-        //3.载入车辆
-
-
-        //4.载入库位信息
-
-
+//        console.log("floorTemp.scaleX="+floorTemp.scaleX)
+//        console.log("width================================"+floorTemp.width)
+        lineAndAgvCanvas.requestPaint()
     }
+    onHeightChanged:{
+        floorTemp.scaleY = msgCenter.getBkgHeight(myid)/floorTemp.height
+        console.log("floorTemp.scaleY="+floorTemp.scaleY)
+        console.log("height================================"+floorTemp.height)
+        lineAndAgvCanvas.requestPaint()
+    }
+
 }

@@ -9,7 +9,12 @@ class FloorModelData : public QObject
     Q_PROPERTY(int myId READ myId WRITE setMyId NOTIFY myIdChanged)
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
 public:
-    explicit FloorModelData(QObject *parent = nullptr);
+    explicit FloorModelData(QObject *parent = nullptr): QObject(parent),
+        m_id(-1),
+        m_name("")
+    {
+    }
+
     int myId(){return m_id;}
     QString name(){return m_name;}
 

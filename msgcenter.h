@@ -8,6 +8,7 @@
 #include <QString>
 #include <QWaitCondition>
 #include <QMutex>
+#include <QMutexLocker>
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -95,8 +96,20 @@ public:
     Q_INVOKABLE void subAgvPosition();
     Q_INVOKABLE void subAgvStatus();
 
+    //获取楼层信息
     Q_INVOKABLE QList<QObject *> getFloors();
-    Q_INVOKABLE QList<QObject *> getFloorsLines(int floorId);
+
+    //获取线路信息
+    Q_INVOKABLE QList<QObject *> getDrawPaths(){
+        QMutexLocker l(&pathMtx);
+        return draw_paths;
+    }
+
+    //获取agv信息
+    Q_INVOKABLE QList<QObject *> getDrawAgvs(){
+        QMutexLocker l(&agvMtx);
+        return draw_agvs;
+    }
 
     //获取任务列表
     Q_INVOKABLE QList<TASK_INFO> getTaskInfoModel(){return agvtaskinfos;}
@@ -130,8 +143,8 @@ signals:
     //订阅的任务信息接收  成功
     void onSubTask();
     //获取到一个agv位置信息
-    void sig_pub_agv_position(int id,QString name,double x,double y,double theta);
-
+    //void sig_pub_agv_position(int id,QString name,double x,double y,double theta,int floor);
+    void sig_update_agv_lines();
 public slots:
     void push(const QString &response);
 private:
@@ -177,9 +190,11 @@ private:
     std::thread thread_msg_process;
 
     bool isMapLoaded;
-signals:
 
-public slots:
+    QMutex pathMtx;
+    QMutex agvMtx;
+    QList<QObject *> draw_paths;
+    QList<QObject *> draw_agvs;
 };
 
 #endif // MSGCENTER_H
