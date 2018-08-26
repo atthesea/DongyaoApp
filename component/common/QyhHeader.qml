@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick 2.9
 
 //使用请在全屏的item下
 Rectangle {

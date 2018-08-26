@@ -1,6 +1,6 @@
-import QtQuick 2.0
-import QtQuick.Controls 2.4
-import QtQuick.Layouts 1.11
+import QtQuick 2.9
+import QtQuick.Controls 2.2
+import QtQuick.Layouts 1.3
 
 Rectangle {
     //三个配置，一个确认 一个取消按钮

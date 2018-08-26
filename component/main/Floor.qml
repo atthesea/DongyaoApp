@@ -1,12 +1,12 @@
-import QtQuick 2.0
-import QtQuick.Controls 2.4
+import QtQuick 2.9
+import QtQuick.Controls 2.2
 
 Page {
     id:floorTemp
     property int myid:0;
     property string myname:"";
-    property real scaleX: 1.0
-    property real scaleY: 1.0
+    property int originWidth: 1024
+    property real originHeight: 768
 
     clip: true
     property real scaleScale: 2.0//控制放大的大小，这里放大两倍
@@ -39,9 +39,47 @@ Page {
         anchors.top: parent.top
         width: 40
         height: 40
-        radius: 20
+        //        radius: 20
         color: "#A7A7A7A0"
         visible:(floorFlickable.state ===  "notfullscreen")
+
+        Rectangle{
+            width: 10
+            height: 1
+            anchors.bottom: parent.verticalCenter
+            anchors.bottomMargin: 2
+            anchors.right: parent.horizontalCenter
+            anchors.rightMargin: 2
+            color: "white"
+        }
+        Rectangle{
+            width: 1
+            height: 10
+            anchors.bottom: parent.verticalCenter
+            anchors.bottomMargin: 2
+            anchors.right: parent.horizontalCenter
+            anchors.rightMargin: 2
+            color: "white"
+        }
+        Rectangle{
+            width: 10
+            height: 1
+            anchors.top: parent.verticalCenter
+            anchors.topMargin: 2
+            anchors.left: parent.horizontalCenter
+            anchors.leftMargin: 2
+            color: "white"
+        }
+        Rectangle{
+            width: 1
+            height: 10
+            anchors.top: parent.verticalCenter
+            anchors.topMargin: 2
+            anchors.left: parent.horizontalCenter
+            anchors.leftMargin: 2
+            color: "white"
+        }
+
         MouseArea{
             anchors.fill: parent
             onClicked: {
@@ -64,32 +102,19 @@ Page {
         property int notFullScreenX: 0
         property int notFullScreenY: 0
 
-        property real scaleXX: 1.0  //用于计算所有线路的点位?//TODO
-        property real scaleYY: 1.0  //用于计算所有线路的点位?//TODO
-
         state: "fullscreen"
         states:[
             State {
                 name: "fullscreen"
                 PropertyChanges { target: bkg_picture;width:floorTemp.width;height:floorTemp.height;}
-                PropertyChanges { target: floorFlickable;contentWidth:floorTemp.width;contentHeight:floorTemp.height;contentX:0;contentY:0;scaleXX:floorTemp.scaleX;scaleYY:floorTemp.scaleY}
+                PropertyChanges { target: floorFlickable;contentWidth:floorTemp.width;contentHeight:floorTemp.height;contentX:0;contentY:0}
             },
             State {
                 name: "notfullscreen"
                 PropertyChanges { target: bkg_picture;width:floorTemp.width*floorTemp.scaleScale;height:floorTemp.height*floorTemp.scaleScale;}
-                PropertyChanges { target: floorFlickable;contentWidth:floorTemp.width*floorTemp.scaleScale;contentHeight:floorTemp.height*floorTemp.scaleScale;contentX:floorFlickable.notFullScreenX;contentY:floorFlickable.notFullScreenY;scaleXX:floorTemp.scaleX*floorTemp.scaleScale;scaleYY:floorTemp.scaleY*floorTemp.scaleScale}
+                PropertyChanges { target: floorFlickable;contentWidth:floorTemp.width*floorTemp.scaleScale;contentHeight:floorTemp.height*floorTemp.scaleScale;contentX:floorFlickable.notFullScreenX;contentY:floorFlickable.notFullScreenY}
             }
         ]
-
-//        transitions: Transition {
-//            NumberAnimation { properties: "scale"; duration: 400 }
-//            NumberAnimation { properties: "width"; duration: 400 }
-//            NumberAnimation { properties: "height"; duration: 400 }
-//            NumberAnimation { properties: "contentWidth"; duration: 400 }
-//            NumberAnimation { properties: "contentHeight"; duration: 400 }
-//            NumberAnimation { properties: "contentX"; duration: 400 }
-//            NumberAnimation { properties: "contentY"; duration: 400 }
-//        }
 
         onStateChanged: {
             lineAndAgvCanvas.requestPaint();
@@ -130,9 +155,6 @@ Page {
 
                 onPaint: {
                     var ctx = getContext("2d");
-                    console.log("========================================================   START")
-                    console.log("========================================================clear width=",lineAndAgvCanvas.width)
-                    console.log("========================================================clear height=",lineAndAgvCanvas.height)
                     ctx.save();
                     ctx.clearRect(0, 0, lineAndAgvCanvas.width, lineAndAgvCanvas.height);
                     //draw lines
@@ -141,35 +163,35 @@ Page {
                     {
                         var path = paths[ii];
                         if(path.floor === floorTemp.myid){
-                            console.log("================================================ii="+ii)
+                            ctx.beginPath();
                             ctx.strokeStyle=path.color;
-                            ctx.moveTo(path.startX/floorFlickable.scaleXX,path.startY/floorFlickable.scaleYY);
-                            console.log("move to="+path.startX/floorFlickable.scaleXX+","+path.startY/floorFlickable.scaleYY)
+                            ctx.moveTo(path.startX*lineAndAgvCanvas.width/floorTemp.originWidth,path.startY*lineAndAgvCanvas.height/floorTemp.originHeight);
                             if(path.type === 0){
-                                ctx.lineTo(path.endX/floorFlickable.scaleXX,path.endY/floorFlickable.scaleYY);
-                                console.log("line to="+path.endX/floorFlickable.scaleXX+","+path.endY/floorFlickable.scaleYY)
+                                ctx.lineTo(path.endX*lineAndAgvCanvas.width/floorTemp.originWidth,path.endY*lineAndAgvCanvas.height/floorTemp.originHeight);
                             }else if(path.type === 1){
-                                ctx.quadraticCurveTo(path.p1x/floorFlickable.scaleXX,path.p1y/floorFlickable.scaleYY,path.endX/floorFlickable.scaleXX,path.endY/floorFlickable.scaleYY);
-                                console.log("quadratic to="+path.p1x/floorFlickable.scaleXX+","+path.p1y/floorFlickable.scaleYY+"  "+path.endX/floorFlickable.scaleXX+","+path.endY/floorFlickable.scaleYY)
+                                ctx.quadraticCurveTo(path.p1x*lineAndAgvCanvas.width/floorTemp.originWidth,path.p1y*lineAndAgvCanvas.height/floorTemp.originHeight,path.endX*lineAndAgvCanvas.width/floorTemp.originWidth,path.endY*lineAndAgvCanvas.height/floorTemp.originHeight);
                             }else if(path.type === 2){
-                                console.log("quadratic to="+path.p1x/floorFlickable.scaleXX+","+path.p1y/floorFlickable.scaleYY+"  "+path.p2x/floorFlickable.scaleXX+","+path.p2y/floorFlickable.scaleYY+"  "+path.endX/floorFlickable.scaleXX+","+path.endY/floorFlickable.scaleYY)
-                                ctx.bezierCurveTo(path.p1x/floorFlickable.scaleXX,path.p1y/floorFlickable.scaleYY,path.p2x/floorFlickable.scaleXX,path.p2y/floorFlickable.scaleYY,path.endX/floorFlickable.scaleXX,path.endY/floorFlickable.scaleYY);
+                                ctx.bezierCurveTo(path.p1x*lineAndAgvCanvas.width/floorTemp.originWidth,path.p1y*lineAndAgvCanvas.height/floorTemp.originHeight,path.p2x*lineAndAgvCanvas.width/floorTemp.originWidthpath.p2y*lineAndAgvCanvas.height/floorTemp.originHeight,path.endX*lineAndAgvCanvas.width/floorTemp.originWidth,path.endY*lineAndAgvCanvas.height/floorTemp.originHeight);
                             }
                             ctx.stroke();
+                            ctx.moveTo(path.endX*lineAndAgvCanvas.width/floorTemp.originWidth,path.endY*lineAndAgvCanvas.height/floorTemp.originHeight);
+                            ctx.closePath();
                         }
                     }
+
+                    //                    //draw Agvs
+                    //                    var agvs = msgCenter.getDrawAgvs();
+                    //                    for(var kk = 0;kk<agvs.length;++kk)
+                    //                    {
+                    //                        var agv = agvs[kk];
+                    //                        if(agv.floorid === floorTemp.myid){
+                    //                            //TODO
+                    //                            ctx.stroke();
+                    //                        }
+                    //                    }
+
                     ctx.restore();
-                    console.log("======================================================== END")
-//                    //draw Agvs
-//                    var agvs = msgCenter.getDrawAgvs();
-//                    for(var kk = 0;kk<agvs.length;++kk)
-//                    {
-//                        var agv = agvs[kk];
-//                        if(agv.floorid === floorTemp.myid){
-//                            //TODO
-//                            ctx.stroke();
-//                        }
-//                    }
+
                 }
 
                 Connections{
@@ -182,16 +204,15 @@ Page {
         }
     }
 
+    Component.onCompleted: {
+        originWidth = msgCenter.getBkgWidth(myid);
+        originHeight = msgCenter.getBkgHeight(myid);
+    }
+
     onWidthChanged: {
-        floorTemp.scaleX = msgCenter.getBkgWidth(myid)/floorTemp.width
-//        console.log("floorTemp.scaleX="+floorTemp.scaleX)
-//        console.log("width================================"+floorTemp.width)
         lineAndAgvCanvas.requestPaint()
     }
     onHeightChanged:{
-        floorTemp.scaleY = msgCenter.getBkgHeight(myid)/floorTemp.height
-        console.log("floorTemp.scaleY="+floorTemp.scaleY)
-        console.log("height================================"+floorTemp.height)
         lineAndAgvCanvas.requestPaint()
     }
 

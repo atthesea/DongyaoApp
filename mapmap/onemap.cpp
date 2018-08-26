@@ -1,4 +1,5 @@
 ﻿#include "onemap.h"
+#include <algorithm>
 
 OneMap::OneMap():
     max_id(0)

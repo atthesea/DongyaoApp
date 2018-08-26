@@ -1,7 +1,7 @@
-import QtQuick 2.11
-import QtQuick.Window 2.11
+import QtQuick 2.9
+import QtQuick.Window 2.3
 import QtQuick.Controls 2.2
-import QtQuick.Layouts 1.11
+import QtQuick.Layouts 1.3
 import QtWebSockets 1.1
 
 import "./component/main" as MAIN

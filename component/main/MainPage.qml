@@ -1,7 +1,7 @@
-import QtQuick 2.11
+import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Extras 1.4
-import QtQuick.Layouts 1.11
+import QtQuick.Layouts 1.3
 import "../common" as COMMON
 import "./FloorCreate.js" as FloorCreator;
 
