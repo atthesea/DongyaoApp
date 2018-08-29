@@ -68,3 +68,12 @@ int getRandom(int maxRandom)
         return qrand()%maxRandom;
     return qrand();
 }
+
+int stringToInt(std::string str)
+{
+    int r;
+    std::stringstream ss;
+    ss<<str;
+    ss>>r;
+    return r;
+}

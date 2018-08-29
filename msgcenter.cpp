@@ -58,7 +58,7 @@ void MsgCenter::init()
             QString response = responses.front();
             responses.pop_front();
             responsesMtx.unlock();
-
+            //qDebug()<<"RECV:"<<response;
             QJsonDocument d = QJsonDocument::fromJson(response.toLocal8Bit());
             parseOneMsg(d.object());
         }
@@ -342,8 +342,8 @@ void MsgCenter::response_map_get(const QJsonObject &response)
 
 void MsgCenter::pub_agv_position(const QJsonObject &response)
 {
-    QMutexLocker l(&pathMtx);
-    QMutexLocker l2(&agvMtx);
+    pathMtx.lock();
+    agvMtx.lock();
     draw_paths.clear();
     draw_agvs.clear();
     auto json_agvs = response["agvs"].toArray();
@@ -356,16 +356,26 @@ void MsgCenter::pub_agv_position(const QJsonObject &response)
         double y = json_one_agv["y"].toDouble();
         double theta = json_one_agv["theta"].toDouble();
         int floor = json_one_agv["floor"].toInt();
-        //emit sig_pub_agv_position(id,name,x,y,theta,floor);
 
         AgvPositionModelData *a = new AgvPositionModelData;
         a->setMyid(id);
         a->setColor(COMMON_COLOR_TABLE[id%6].color);
         a->setFloorid(floor);
+        //qDebug()<<"FLOOR = "<<a->floorid();
         a->setName(name);
         a->setTheta(theta);
         a->setX(x);
         a->setY(y);
+        auto floorptr = g_onemap->getFloorById(floor);
+        if(floorptr != nullptr){
+            auto bkgptr = g_onemap->getBackgroundById(floorptr->getBkg());
+            if(bkgptr!=nullptr){
+                if(bkgptr!=nullptr){
+                    a->setX(x - bkgptr->getX());
+                    a->setY(y - bkgptr->getY());
+                }
+            }
+        }
         draw_agvs.append(a);
 
         QString occurs = json_one_agv["occurs"].toString();
@@ -400,6 +410,8 @@ void MsgCenter::pub_agv_position(const QJsonObject &response)
             draw_paths.append(l);
         }
     }
+    pathMtx.unlock();
+    agvMtx.unlock();
     emit sig_update_agv_lines();
 }
 

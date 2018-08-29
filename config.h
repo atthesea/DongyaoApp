@@ -17,7 +17,8 @@ public:
 
     Q_INVOKABLE QList<QObject *> getStorageDatas(){return storagetDatas;}
     Q_INVOKABLE QList<QObject *> getTasks(){return tasks;}
-    Q_INVOKABLE QString getFloor(){return floor;}
+    Q_INVOKABLE QString getArea(){return area;}
+    Q_INVOKABLE int getFloorid(){return floorid;}
     Q_INVOKABLE QString getWms_ip(){return wms_ip;}
     Q_INVOKABLE int getWms_port(){return wms_port;}
     Q_INVOKABLE QString getDispatch_ip(){return dispatch_ip;}
@@ -45,7 +46,8 @@ public slots:
 private:
     QList<QObject *> storagetDatas;
     QList<QObject *> tasks;
-    QString floor;
+    QString area;
+    int floorid;
     QString wms_ip;
     int wms_port;
     QString dispatch_ip;

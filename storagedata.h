@@ -12,6 +12,7 @@ class StorageData : public QObject
     Q_PROPERTY(QString storage_no READ storage_no WRITE setStorage_no NOTIFY storage_noChanged)
     Q_PROPERTY(int x READ x WRITE setX NOTIFY xChanged)
     Q_PROPERTY(int y READ y WRITE setY NOTIFY yChanged)
+    //Q_PROPERTY(int floor READ floor WRITE setFloor NOTIFY floorChanged)
     Q_PROPERTY(bool canbe_null READ canbe_null WRITE setCanbe_null NOTIFY canbe_nullChanged)
     Q_PROPERTY(bool canbe_raw READ canbe_raw WRITE setCanbe_raw NOTIFY canbe_rawChanged)
     Q_PROPERTY(bool canbe_pack READ canbe_pack WRITE setCanbe_pack NOTIFY canbe_packChanged)
@@ -20,6 +21,7 @@ class StorageData : public QObject
     Q_PROPERTY(bool canbe_product READ canbe_product WRITE setCanbe_product NOTIFY canbe_productChanged)
     Q_ENUMS(STORAGE_TYPE)
     Q_PROPERTY(STORAGE_TYPE storage_type READ storage_type WRITE setStorage_type NOTIFY storage_typeChanged)
+    Q_PROPERTY(bool isSelected READ isSelected WRITE setIsSelected NOTIFY isSelectedChanged)
 
 public:
     enum STORAGE_TYPE{
@@ -46,6 +48,7 @@ public:
         m_canbe_pack = b.m_canbe_pack;
         m_canbe_product = b.m_canbe_product;
         m_canbe_tray = b.m_canbe_tray;
+        m_isSelected = b.m_isSelected;
     }
 
 //    int id(){return m_id;}
@@ -53,6 +56,7 @@ public:
     QString storage_no(){return m_storage_no;}
     int x(){return m_x;}
     int y(){return m_y;}
+    //int floor(){return m_floor;}
     STORAGE_TYPE storage_type(){return m_storage_type;}
     bool canbe_null(){return m_canbe_null;}
     bool canbe_raw(){return m_canbe_raw;}
@@ -60,12 +64,14 @@ public:
     bool canbe_tray(){return m_canbe_tray;}
     bool canbe_trash(){return m_canbe_trash;}
     bool canbe_product(){return m_canbe_product;}
+    bool isSelected(){return m_isSelected;}
 
     //void setId(int _id){m_id=_id;emit idChanged(_id);}
     void setStore_no(QString _store_no){m_store_no = _store_no;emit store_noChanged(_store_no);}
     void setStorage_no(QString _storage_no){m_storage_no = _storage_no;emit storage_noChanged(_storage_no);}
     void setX(int _x){m_x=_x;emit xChanged(_x);}
     void setY(int _y){m_y=_y;emit yChanged(_y);}
+    //void setFloor(int _floor){m_floor=_floor;emit floorChanged(_floor);}
     void setStorage_type(STORAGE_TYPE _storage_type){m_storage_type=_storage_type;emit storage_typeChanged(_storage_type);}
     void setCanbe_null(bool _canbe_null){m_canbe_null=_canbe_null;emit canbe_nullChanged(_canbe_null);}
     void setCanbe_raw(bool _canbe_raw){m_canbe_raw=_canbe_raw;emit canbe_rawChanged(_canbe_raw);}
@@ -73,13 +79,14 @@ public:
     void setCanbe_tray(bool _canbe_tray){m_canbe_tray=_canbe_tray;emit canbe_trayChanged(_canbe_tray);}
     void setCanbe_trash(bool _canbe_trash){m_canbe_trash=_canbe_trash;emit canbe_trashChanged(_canbe_trash);}
     void setCanbe_product(bool _canbe_product){m_canbe_product=_canbe_product;emit canbe_productChanged(_canbe_product);}
-
+    void setIsSelected(bool _isSelected){m_isSelected = _isSelected;emit isSelectedChanged(_isSelected);}
 signals:
     //void idChanged(int _id);
     void store_noChanged(QString _store_no);
     void storage_noChanged(QString _storage_no);
     void xChanged(int _x);
     void yChanged(int _y);
+    //void floorChanged(int _floor);
     void storage_typeChanged(STORAGE_TYPE _storage_type);
     void canbe_nullChanged(bool _canbe_null);
     void canbe_rawChanged(bool _canbe_raw);
@@ -87,6 +94,7 @@ signals:
     void canbe_trayChanged(bool _canbe_tray);
     void canbe_trashChanged(bool _canbe_trash);
     void canbe_productChanged(bool _canbe_product);
+    void isSelectedChanged(bool _isSelected);
 public slots:
 
 private:
@@ -96,12 +104,14 @@ private:
     QString m_storage_no;
     int m_x;
     int m_y;
+    //int m_floor;
     bool m_canbe_null;
     bool m_canbe_raw;
     bool m_canbe_pack;
     bool m_canbe_tray;
     bool m_canbe_trash;
     bool m_canbe_product;
+    bool m_isSelected;
 };
 
 #endif // STORAGEDATA_H

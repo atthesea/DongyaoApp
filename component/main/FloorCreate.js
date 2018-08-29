@@ -1,5 +1,6 @@
 var myid;
 var myname;
+var pageIndex;
 
 var componetFloor;
 var spriteFloor;
@@ -14,7 +15,7 @@ function createFloorObject() {
 
 function finishCreationFloor() {
     if (componetFloor.status === Component.Ready) {
-        spriteFloor = componetFloor.createObject(floorsSwipeView, {"myid":myid ,"myname": myname});
+        spriteFloor = componetFloor.createObject(floorsSwipeView, {"myid":myid ,"myname": myname,"pageIndex":pageIndex});
         if (spriteFloor === null) {
             // Error Handling
             console.log("Error creating Floor");

@@ -25,8 +25,8 @@ void Config::load()
         return ;
     }
     QByteArray vala = asseetsConfigFile.readAll();
-    qDebug()<<"vala length = "<<vala.length();
-    qDebug()<<"vala = "<<QString::fromUtf8(vala);
+    //    qDebug()<<"vala length = "<<vala.length();
+    //    qDebug()<<"vala = "<<QString::fromUtf8(vala);
     asseetsConfigFile.close();
     if(!file.open(QIODevice::ReadWrite | QIODevice::Text)){
         emit loadFail();
@@ -45,17 +45,10 @@ void Config::load()
     QByteArray val = file.readAll();
     file.close();
 
-    //QString ss(val);
-    //qDebug()<<"ss length = "<<ss.length();
-    //    for(int i=0;i<ss.length()/100+1;++i){
-    //        qDebug()<<" "<<ss.mid(i*100,100);
-    //    }
-    //qDebug()<<"ss = "<<ss;
-
     QJsonDocument d = QJsonDocument::fromJson(val);
     params = d.object();
 
-    floor = params["floor"].toString();
+    area = params["area"].toString();
     wms_ip = params["wms_ip"].toString();
     wms_port = params["wms_port"].toInt();
     dispatch_ip = params["dispatch_ip"].toString();
@@ -77,8 +70,9 @@ void Config::load()
         allTasks.append(task);
     }
 
-    QJsonObject flobj = params[floor].toObject();
-    QJsonArray taskArr = flobj["hand_tasks"].toArray();
+    QJsonObject areaobj = params[area].toObject();
+    QJsonArray taskArr = areaobj["hand_tasks"].toArray();
+    floorid = areaobj["floorid"].toInt();
     foreach (auto one, taskArr) {
         int taskNo = one.toInt();
         foreach (auto task, allTasks) {
@@ -88,7 +82,7 @@ void Config::load()
         }
     }
 
-    QJsonArray arr = flobj["storages"].toArray();
+    QJsonArray arr = areaobj["storages"].toArray();
 
     foreach (auto one, arr) {
         StorageData *data = new StorageData;
@@ -117,6 +111,7 @@ void Config::load()
 
         data->setX(one["storage_x"].toInt());
         data->setY(one["storage_y"].toInt());
+        //data->setFloor(one["floorid"].toInt());
         storagetDatas.append(data);
     }
 

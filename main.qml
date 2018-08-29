@@ -41,6 +41,37 @@ ApplicationWindow {
         visible: false
     }
 
+    //显示提示语
+    Rectangle{
+        id:toastRect
+        color: "#1C1C1CD8"
+        visible: false
+        anchors.centerIn: parent
+        width: toast.width*4
+        height: toast.height*2
+        z:100
+        Text {
+            id: toast
+            text: qsTr("")
+            font.pixelSize: 35
+            font.bold: true
+            color: "white"
+            anchors.centerIn: parent
+            function show(str){
+                toast.text = str;
+                toastRect.visible = true;
+            }
+            Timer{
+                interval: 3000
+                repeat: true
+                running: toastRect.visible
+                onTriggered: {
+                    toastRect.visible = false;
+                }
+            }
+        }
+    }
+
     function showLoading(){
         loadpage.visible =  true;
         mainpage.visible = false;
@@ -69,6 +100,10 @@ ApplicationWindow {
             mainpage.init();
             window.hasInitMain = true
         }
+    }
+
+    function showToast(str){
+        toast.show(str);
     }
 
     Component.onCompleted: {

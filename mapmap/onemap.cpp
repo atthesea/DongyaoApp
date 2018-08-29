@@ -1,5 +1,6 @@
 ﻿#include "onemap.h"
 #include <algorithm>
+#include "../global.h"
 
 OneMap::OneMap():
     max_id(0)
@@ -225,7 +226,7 @@ int OneMap::getFloor(int spiritID)
 
         if(std::find(pointlist.begin(), pointlist.end(), spiritID) != pointlist.end())
         {
-            floor = std::stoi(onefloor->getName().substr(6));
+            floor = stringToInt(onefloor->getName().substr(6));
             break;
         }
 
@@ -233,7 +234,7 @@ int OneMap::getFloor(int spiritID)
 
         if (std::find(pathlist.begin(), pathlist.end(), spiritID) != pathlist.end())
         {
-            floor = std::stoi(onefloor->getName().substr(6));
+            floor = stringToInt(onefloor->getName().substr(6));
             break;
         }
     }

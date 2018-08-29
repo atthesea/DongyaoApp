@@ -11,7 +11,8 @@ StorageData::StorageData(QObject *parent) : QObject(parent),
   m_canbe_pack(true),
   m_canbe_tray(true),
   m_canbe_trash(true),
-  m_canbe_product(true)
+  m_canbe_product(true),
+  m_isSelected(false)
 {
 
 }

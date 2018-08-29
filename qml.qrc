@@ -16,5 +16,12 @@
         <file>image/busy.png</file>
         <file>image/cardboard.png</file>
         <file>component/common/QyhHeader.qml</file>
+        <file>image/agv.png</file>
+        <file>image/type_null.png</file>
+        <file>image/type_pack.png</file>
+        <file>image/type_product.png</file>
+        <file>image/type_raw.png</file>
+        <file>image/type_trash.png</file>
+        <file>image/type_tray.png</file>
     </qresource>
 </RCC>

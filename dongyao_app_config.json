@@ -1,5 +1,5 @@
 {
-    "floor":"floor1",
+    "area":"floor_1",
     "wms_ip":"127.0.0.1",
     "wms_port":9997,
     "dispatch_ip":"127.0.0.1",
@@ -7,8 +7,8 @@
     "username":"qyh",
     "userpwd":"1234",
     "admin_pwd":"hitrobot",
-    "storage_width":90,
-    "storage_height":90,
+    "storage_width":40,
+    "storage_height":40,
 
     "HandTasks":[
         {
@@ -67,7 +67,8 @@
         }
     ],
 
-    "floor1":{
+    "floor_1":{
+        "floorid":1,
 	    "hand_tasks":[1,2,8],
         "storages":[
             {
@@ -385,7 +386,8 @@
         ]
     },
 
-    "floor2":{
+    "floor_2":{
+        "floorid":16,
         "hand_tasks":[3,9],
         "storages":[
             {
@@ -547,7 +549,8 @@
         ]
     },
 
-    "floor3_wq":{
+    "floor_3_wq":{
+        "floorid":17,
         "hand_tasks":[4],
         "storages":[
             {
@@ -866,7 +869,8 @@
     },
 
 
-    "floor3_wb":{
+    "floor_3_wb":{
+        "floorid":17,
         "hand_tasks":[5,6,7],
         "storages":[
             {

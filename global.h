@@ -21,4 +21,6 @@ QString getErrorString(int error_code);
 
 int getRandom(int maxRandom);
 
+int stringToInt(std::string str);
+
 #endif // GLOBAL_H

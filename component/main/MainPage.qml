@@ -9,6 +9,13 @@ Rectangle {
     id:mainPage
     property var floors:[]
     property var taskpage: null
+    property int setBtnX: setBtn.x
+    property int taskBtnX: taskBtn.x+taskBtn.width
+    property int currentShowFloorIndex: 0
+
+    signal setBtnClick();
+    signal taskBtnClick();
+    signal currentShowChanged();
 
     COMMON.QyhHeader{
         id:toolBar
@@ -45,6 +52,15 @@ Rectangle {
             anchors.verticalCenter: wmsLabel.verticalCenter
             anchors.left: wmsLabel.right
             anchors.leftMargin: 10
+            Connections{
+                target: g_wmsConnection
+                onSig_connect:{
+                    wmsStatus.active = true
+                }
+                onSig_disconnect:{
+                    wmsStatus.active = false
+                }
+            }
         }
 
         Text {
@@ -67,6 +83,68 @@ Rectangle {
             id: name
             text: qsTr("MAIN")
             anchors.centerIn: parent
+        }
+
+
+        //TODO:set btn
+        Rectangle{
+            id:setBtn
+            width: setBtnText.width*1.2
+            height: parent.width
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.right: taskBtn.left
+            anchors.rightMargin: 20
+            Text {
+                id: setBtnText
+                text: qsTr("库位设置成▽")
+                anchors.centerIn: parent
+            }
+            color: "#00000000"
+            MouseArea{
+                anchors.fill: parent
+                onPressed: {
+                    setBtn.color = "#4E505A"
+                }
+                onReleased: {
+                    setBtn.color = "#00000000"
+                    mainPage.setBtnClick();
+                }
+            }
+            onXChanged: {
+                mainPage.setBtnX = x;
+            }
+        }
+
+        //TODO:task btn
+        Rectangle{
+            id:taskBtn
+            width: taskBtnText.width*1.2
+            height: parent.width
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.right: settingBtn.left
+            anchors.rightMargin: 20
+            Text {
+                id: taskBtnText
+                text: qsTr("任务▽")
+                anchors.centerIn: parent
+            }
+            color: "#00000000"
+            MouseArea{
+                anchors.fill: parent
+                onPressed: {
+                    taskBtn.color = "#4E505A"
+                }
+                onReleased: {
+                    taskBtn.color = "#00000000"
+                    mainPage.taskBtnClick();
+                }
+            }
+            onXChanged: {
+                mainPage.taskBtnX =  taskBtn.x+taskBtn.width
+            }
+            onWidthChanged: {
+                mainPage.taskBtnX =  taskBtn.x+taskBtn.width
+            }
         }
     }
 
@@ -110,11 +188,6 @@ Rectangle {
         }
     }
 
-    ListModel {
-        id: btnModel
-        ListElement {tag: qsTr("任务");myId:0}
-    }
-
     SwipeView{
         y:40
         width: parent.width
@@ -123,22 +196,26 @@ Rectangle {
         Task{
             id:taskpage
         }
+        onCurrentIndexChanged: {
+            mainPage.currentShowFloorIndex = currentIndex;
+            mainPage.currentShowChanged();
+        }
     }
 
     function init(){
         var floors = msgCenter.getFloors();
         for(var ii = 0;ii<floors.length;++ii){
-            btnModel.append({tag:floors[ii].name,myId:floors[ii].myId});
             FloorCreator.myname = floors[ii].name;
             FloorCreator.myid = floors[ii].myId;
+            FloorCreator.pageIndex = ii+1;//task page is index 0
             FloorCreator.createFloorObject();
-            if(g_config.getFloor() === floors[ii].name)
+            if(g_config.getFloorid() === floors[ii].name)
             {
                 floorsSwipeView.currentIndex = ii+1;
             }
         }
 
-        taskpage.init();
+        //        taskpage.init();
     }
 
     Connections{
@@ -162,7 +239,4 @@ Rectangle {
             wmsStatus.active = false;
         }
     }
-
-
-
 }
