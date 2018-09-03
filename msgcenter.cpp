@@ -444,6 +444,7 @@ void MsgCenter::pub_agv_task(const QJsonObject &response)
     //TODO:
     //更新任务列表
     QJsonArray json_tasks = response["tasks"].toArray();
+    taskMtx.lock();
     agvtaskinfos.clear();
     for(int i=0;i<json_tasks.size();++i){
         QJsonObject json_one_task = json_tasks[i].toObject();
@@ -462,22 +463,22 @@ void MsgCenter::pub_agv_task(const QJsonObject &response)
         ti.errorInfo = json_one_task["errorInfo"].toString();
         ti.id = json_one_task["id"].toInt();
         ti.isCancel = json_one_task["isCancel"].toBool();
-
-        QJsonArray json_nodes = json_one_task["nodes"].toArray();
-        for(int j=0;j<json_nodes.size();++j){
-            QJsonObject json_one_node = json_nodes[j].toObject();
-            TaskNode node;
-            node.stationid = json_one_node["station"].toInt();
-            QJsonArray json_things = json_one_node["things"].toArray();
-            for(int k=0;k<json_things.size();++k){
-                QJsonObject json_one_thing = json_things[k].toObject();
-                //                node.dowhat = json_one_thing["id"].toInt();
-                //                //node.params =
-            }
-            ti.nodes.append(node);
-        }
+//        QJsonArray json_nodes = json_one_task["nodes"].toArray();
+//        for(int j=0;j<json_nodes.size();++j){
+//            QJsonObject json_one_node = json_nodes[j].toObject();
+//            TaskNode node;
+//            node.stationid = json_one_node["station"].toInt();
+//            QJsonArray json_things = json_one_node["things"].toArray();
+//            for(int k=0;k<json_things.size();++k){
+//                QJsonObject json_one_thing = json_things[k].toObject();
+//                //                node.dowhat = json_one_thing["id"].toInt();
+//                //                //node.params =
+//            }
+//            ti.nodes.append(node);
+//        }
         agvtaskinfos.append(ti);
     }
+    taskMtx.unlock();
     emit onSubTask();
 }
 

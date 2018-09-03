@@ -23,5 +23,8 @@
         <file>image/type_raw.png</file>
         <file>image/type_trash.png</file>
         <file>image/type_tray.png</file>
+        <file>image/floor1.png</file>
+        <file>image/floor2.png</file>
+        <file>image/floor3.png</file>
     </qresource>
 </RCC>

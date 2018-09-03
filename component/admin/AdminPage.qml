@@ -64,21 +64,21 @@ Rectangle {
         }
         Button{
             text: "Cancel"
-            onClicked: configSet.close()
+            onClicked: window.hideAdmin()
             Layout.alignment: Qt.AlignVCenter|Qt.AlignLeft
         }
     }
 
     function init(){
         console.debug("admin page complete")
-        var f = g_config.getFloor()
-        if(f === "floor1")
+        var f = g_config.getArea()
+        if(f === "floor_1")
             floor_cbb_input.currentIndex = 0;
-        else if(f === "floor2")
+        else if(f === "floor_2")
             floor_cbb_input.currentIndex = 1;
-        else if(f === "floor3_wq")
+        else if(f === "floor_3_wq")
             floor_cbb_input.currentIndex = 2;
-        else if(f === "floor3_wb")
+        else if(f === "floor_3_wb")
             floor_cbb_input.currentIndex = 3;
 
         wms_ip_input.text = g_config.getWms_ip();
@@ -86,7 +86,5 @@ Rectangle {
         dispatch_ip_input.text = g_config.getDispatch_ip();
         dispatch_port_input.text = g_config.getDispatch_port();
     }
-
-
 
 }

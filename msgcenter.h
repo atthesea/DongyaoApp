@@ -112,7 +112,10 @@ public:
     }
 
     //获取任务列表
-    Q_INVOKABLE QList<TASK_INFO> getTaskInfoModel(){return agvtaskinfos;}
+    Q_INVOKABLE QList<TASK_INFO> getTaskInfoModel(){
+        QMutexLocker l(&taskMtx);
+        return agvtaskinfos;
+    }
     Q_INVOKABLE bool getIsMapLoaded(){return isMapLoaded;}
 
     Q_INVOKABLE int getBkgWidth(int floorid);
@@ -177,6 +180,8 @@ private:
 
     QList<AGV_POSITION_INFO> agvpositioninfos;
 
+
+    QMutex taskMtx;
     QList<TASK_INFO> agvtaskinfos;
 
     DispatchConnection dispatch_connection;

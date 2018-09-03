@@ -16,6 +16,8 @@ ApplicationWindow {
     height: 480
     title: qsTr("DongyaoApp")
 
+    property bool isShowLoad: true
+
     property bool hasInitLoad: false
     property bool hasInitAdmin: false
     property bool hasInitMain: false
@@ -73,6 +75,7 @@ ApplicationWindow {
     }
 
     function showLoading(){
+        window.isShowLoad = true
         loadpage.visible =  true;
         mainpage.visible = false;
         adminpage.visible = false;
@@ -83,9 +86,9 @@ ApplicationWindow {
     }
 
     function showAdmin(){
-        loadpage.visible =  true;
+        loadpage.visible =  false;
         mainpage.visible = false;
-        adminpage.visible = false;
+        adminpage.visible = true;
         if(!window.hasInitAdmin){
             adminpage.init();
             window.hasInitAdmin = true
@@ -93,12 +96,21 @@ ApplicationWindow {
     }
 
     function showMain(){
+        window.isShowLoad = false
         loadpage.visible =  false;
         mainpage.visible = true;
         adminpage.visible = false;
         if(!window.hasInitMain){
             mainpage.init();
             window.hasInitMain = true
+        }
+    }
+
+    function hideAdmin(){
+        if(window.isShowLoad){
+            showLoading()
+        }else{
+            showMain()
         }
     }
 

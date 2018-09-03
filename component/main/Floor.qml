@@ -478,8 +478,8 @@ Page {
                 id:agvCanvas
                 width: parent.width
                 height: parent.height
-                property int initWidth: 42
-                property int initHeight: 18
+                property int initWidth: 70
+                property int initHeight: 30
                 x:0
                 y:0
                 z:2
@@ -648,6 +648,14 @@ Page {
         storage_rect_width = g_config.getStorage_width();
         storage_rect_height = g_config.getStorage_height();
 
+//        if(myid === 1){
+//            bkg_picture.source = ":/image/floor1.png";
+//        }else if(myid == 2){
+//            bkg_picture.source = ":/image/floor2.png";
+//        }else if(myid == 3){
+//            bkg_picture.source = ":/image/floor3.png";
+//        }
+
         //获取方格列表//动态创建所有方格
         if(g_config.getFloorid() === myid)
         {
@@ -699,7 +707,8 @@ Page {
             }
         }
         onCurrentShowChanged:{
-            if(floorTemp.pageIndex !== mainPage.currentShowFloorIndex){
+            if(floorTemp.pageIndex !== mainPage.currentShowFloorIndex)
+            {
                 setMenu.visible = false
                 taskListView.visible = false
             }
