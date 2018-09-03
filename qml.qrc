@@ -26,5 +26,6 @@
         <file>image/floor1.png</file>
         <file>image/floor2.png</file>
         <file>image/floor3.png</file>
+        <file>component/main/TaskDelegate.qml</file>
     </qresource>
 </RCC>
