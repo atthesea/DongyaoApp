@@ -2,7 +2,7 @@
     "area":"floor_1",
     "wms_ip":"127.0.0.1",
     "wms_port":9997,
-    "dispatch_ip":"127.0.0.1",
+    "dispatch_ip":"10.0.2.2",
     "dispatch_port":9998,
     "username":"qyh",
     "userpwd":"1234",

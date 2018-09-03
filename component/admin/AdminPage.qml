@@ -58,8 +58,7 @@ Rectangle {
                 g_config.setWms_port(parseInt(wms_port_input.text))
                 g_config.setFloor(floor_cbb_input.currentText)
                 g_config.save()
-                tipDilog.title = qsTr("请重启程序，使改变生效")
-                tipDilog.open()
+                window.showToast("请重启程序，使改变生效")
             }
         }
         Button{
