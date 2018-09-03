@@ -16,60 +16,6 @@
 #include "dispatchconnection.h"
 #include "mapmap/onemap.h"
 
-typedef struct _USER_INFO
-{
-    int id;//id号
-    int role;//角色
-    QString username;//用户名
-    QString password;//密码
-    int status;//登录状态
-}USER_INFO;
-
-//AGV基本信息
-typedef struct _AGV_BASE_INFO
-{
-    int id;
-    QString name;
-    QString ip;
-    int port;
-}AGV_BASE_INFO;
-
-//AGV位置信息
-typedef struct _AGV_POSITION_INFO
-{
-    int id;
-    int x;
-    int y;
-    int rotation;
-}AGV_POSITION_INFO;
-
-//nodes
-struct TaskNode{
-    int stationid;
-    int dowhat;
-    QStringList params;
-};
-
-
-typedef struct _TASK_INFO
-{
-    int id;
-    int excuteAgv;
-    int priority;
-    int status;
-    QString produceTime;
-    QString doTime;
-    QString doneTime;
-    QString cancelTime;
-    int doingIndex;
-    QString errorTime;
-    QString errorCode;
-    QString errorInfo;
-    bool isCancel;
-    QMap<QString,QString> extraParams;
-    QList<TaskNode> nodes;
-}TASK_INFO;
-
 class MsgCenter : public QObject
 {
     Q_OBJECT
@@ -112,7 +58,7 @@ public:
     }
 
     //获取任务列表
-    Q_INVOKABLE QList<TASK_INFO> getTaskInfoModel(){
+    Q_INVOKABLE QList<QObject *> getTaskInfoModel(){
         QMutexLocker l(&taskMtx);
         return agvtaskinfos;
     }
@@ -174,15 +120,8 @@ private:
 
     std::atomic_bool getResponse;
 
-    QList<USER_INFO> userinfos;
-
-    QList<AGV_BASE_INFO> agvbaseinfos;
-
-    QList<AGV_POSITION_INFO> agvpositioninfos;
-
-
     QMutex taskMtx;
-    QList<TASK_INFO> agvtaskinfos;
+    QList<QObject *> agvtaskinfos;
 
     DispatchConnection dispatch_connection;
 

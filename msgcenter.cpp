@@ -8,6 +8,7 @@
 #include "floormodeldata.h"
 #include "linemodeldata.h"
 #include "agvpositionmodeldata.h"
+#include "taskmodeldata.h"
 #include <QImage>
 
 static struct
@@ -43,27 +44,6 @@ void MsgCenter::init()
     connect(&dispatch_connection,SIGNAL(sig_disconnect()),this,SIGNAL(sig_connection_disconnected()));
     connect(&dispatch_connection,SIGNAL(sig_onRead(QString)),this,SLOT(push(QString)));
     dispatch_connection.connToServer(g_config->getDispatch_ip(),g_config->getDispatch_port());
-
-    //响应消息处理的线程
-    thread_msg_process = std::thread([&](){
-        while(!quit){
-            responsesMtx.lock();
-            if(responses.size()<=0){
-                condition.wait(&responsesMtx);
-            }
-            if(quit){
-                responsesMtx.unlock();
-                break;
-            }
-            QString response = responses.front();
-            responses.pop_front();
-            responsesMtx.unlock();
-            //qDebug()<<"RECV:"<<response;
-            QJsonDocument d = QJsonDocument::fromJson(response.toLocal8Bit());
-            parseOneMsg(d.object());
-        }
-        qDebug()<<"QUIT";
-    });
 }
 
 void MsgCenter::resetIpPort(QString ip,int port)
@@ -85,10 +65,8 @@ int MsgCenter::getServerPort()
 //入队响应消息
 void MsgCenter::push(const QString &response)
 {
-    responsesMtx.lock();
-    responses.push_back(response);
-    condition.wakeAll();
-    responsesMtx.unlock();
+    QJsonDocument d = QJsonDocument::fromJson(response.toLocal8Bit());
+    parseOneMsg(d.object());
 }
 
 void MsgCenter::requestWaitResponse(const QJsonObject &request)
@@ -448,34 +426,20 @@ void MsgCenter::pub_agv_task(const QJsonObject &response)
     agvtaskinfos.clear();
     for(int i=0;i<json_tasks.size();++i){
         QJsonObject json_one_task = json_tasks[i].toObject();
-        TASK_INFO ti;
-        ti.excuteAgv = json_one_task["agv"].toInt();
-        if(ti.excuteAgv<=0)ti.excuteAgv = 0;
-        ti.priority = json_one_task["priority"].toInt();
-        ti.status = json_one_task["status"].toInt();
-        ti.produceTime = json_one_task["produceTime"].toString();
-        ti.cancelTime = json_one_task["cancelTime"].toString();
-        ti.doTime =json_one_task["doTime"].toString();
-        ti.doneTime = json_one_task["doneTime"].toString();
-        ti.errorTime = json_one_task["errorTime"].toString();
-        ti.doingIndex = json_one_task["doingIndex"].toInt();
-        ti.errorCode = json_one_task["errorCode"].toInt();
-        ti.errorInfo = json_one_task["errorInfo"].toString();
-        ti.id = json_one_task["id"].toInt();
-        ti.isCancel = json_one_task["isCancel"].toBool();
-//        QJsonArray json_nodes = json_one_task["nodes"].toArray();
-//        for(int j=0;j<json_nodes.size();++j){
-//            QJsonObject json_one_node = json_nodes[j].toObject();
-//            TaskNode node;
-//            node.stationid = json_one_node["station"].toInt();
-//            QJsonArray json_things = json_one_node["things"].toArray();
-//            for(int k=0;k<json_things.size();++k){
-//                QJsonObject json_one_thing = json_things[k].toObject();
-//                //                node.dowhat = json_one_thing["id"].toInt();
-//                //                //node.params =
-//            }
-//            ti.nodes.append(node);
-//        }
+        TaskModelData *ti = new TaskModelData;
+        ti->setExcuteAgv(json_one_task["agv"].toInt());
+        ti->setPriority(json_one_task["priority"].toInt());
+        ti->setStatus(json_one_task["status"].toInt());
+        ti->setProduceTime(json_one_task["produceTime"].toString());
+        ti->setCancelTime(json_one_task["cancelTime"].toString());
+        ti->setDoTime(json_one_task["doTime"].toString());
+        ti->setDoneTime(json_one_task["doneTime"].toString());
+        ti->setErrorTime(json_one_task["errorTime"].toString());
+        ti->setErrorCode(json_one_task["errorCode"].toString());
+        ti->setErrorInfo(json_one_task["errorInfo"].toString());
+        ti->setMyid(json_one_task["id"].toInt());
+        ti->setIsCancel(json_one_task["isCancel"].toBool());
+        ti->setDiscribe(json_one_task["discribe"].toString());
         agvtaskinfos.append(ti);
     }
     taskMtx.unlock();

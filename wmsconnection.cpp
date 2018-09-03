@@ -125,7 +125,7 @@ void WmsConnection::slot_disconnect()
 {
     std::cout<<"disconnected"<<std::endl;
     connected = false;
-    emit sig_recv_response("同服务器连接已断开，请检查网络");
+    emit sig_recv_response("lost connection from wms");
 }
 
 //请求全部的库位信息

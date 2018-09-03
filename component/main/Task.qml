@@ -6,11 +6,6 @@ import "../common" as COMMON
 Page{
     id:taskView
 
-    //任务列表的model
-    ListModel{
-        id:tasklists
-    }
-
     //任务列表
     ListView {
         id: view
@@ -38,7 +33,9 @@ Page{
             return false;
         }
 
-        Component.onCompleted:items.setGroups(0, items.count, "unsorted")
+        Component.onCompleted:{
+            reset();
+        }
 
         function insertPosition(item) {
             var lower = 0
@@ -76,13 +73,15 @@ Page{
             }
         }
 
-        model: tasklists
+        function reset(){
+            if(items.count>0)
+                items.setGroups(0, items.count, "unsorted")
+        }
 
         delegate: TaskDelegate {
             id: delegate
             width: visualModel.width
         }
-
     }
 
     function init()
@@ -90,11 +89,12 @@ Page{
 
     }
 
-    function updateItems()
-    {
-        //TODO 更新listmodel
 
-        //重新排序
-        visualModel.items.setGroups(0, items.count, "unsorted")
+
+    Connections{
+        target: msgCenter
+        onOnSubTask:{
+            visualModel.model = msgCenter.getTaskInfoModel();
+        }
     }
 }

@@ -495,14 +495,14 @@ Page {
                         var agv = agvs[kk];
                         //console.log("agv.floorid="+agv.floorid)
                         if(agv.floorid === floorTemp.myid){
-                            ctx.translate((agv.x + agvCanvas.initWidth/2)*agvCanvas.width/floorTemp.originWidth,(agv.y + agvCanvas.initHeight/2)*agvCanvas.height/floorTemp.originHeight)
+                            ctx.translate((agv.x - agvCanvas.initWidth/2)*agvCanvas.width/floorTemp.originWidth,(agv.y - agvCanvas.initHeight/2)*agvCanvas.height/floorTemp.originHeight)
                             ctx.rotate(agv.theta*Math.PI/180);
                             if(floorFlickable.state === "fullscreen")
                                 ctx.drawImage("qrc:/image/agv.png",0,0,agvCanvas.initWidth*agvCanvas.width/floorTemp.originWidth,agvCanvas.initHeight*agvCanvas.height/floorTemp.originHeight);
                             else
                                 ctx.drawImage("qrc:/image/agv.png",0,0,agvCanvas.initWidth*agvCanvas.width/floorTemp.originWidth,agvCanvas.initHeight*agvCanvas.height/floorTemp.originHeight);
                             ctx.rotate(-agv.theta*Math.PI/180);
-                            ctx.translate(-(agv.x + agvCanvas.initWidth/2)*agvCanvas.width/floorTemp.originWidth,-(agv.y + agvCanvas.initHeight/2)*agvCanvas.height/floorTemp.originHeight)
+                            ctx.translate(-(agv.x - agvCanvas.initWidth/2)*agvCanvas.width/floorTemp.originWidth,-(agv.y - agvCanvas.initHeight/2)*agvCanvas.height/floorTemp.originHeight)
                         }
                     }
                     ctx.restore();

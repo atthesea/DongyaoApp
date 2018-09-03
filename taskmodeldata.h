@@ -7,7 +7,7 @@ class TaskModelData : public QObject
 {
     Q_OBJECT
 
-    Q_PROPERTY(int id READ id WRITE setId NOTIFY idChanged)
+    Q_PROPERTY(int myid READ myid WRITE setMyid NOTIFY myidChanged)
     Q_PROPERTY(int excuteAgv READ excuteAgv WRITE setExcuteAgv NOTIFY excuteAgvChanged)
     Q_PROPERTY(int priority READ priority WRITE setPriority NOTIFY priorityChanged)
     Q_PROPERTY(int status READ status WRITE setStatus NOTIFY statusChanged)
@@ -25,7 +25,7 @@ class TaskModelData : public QObject
 public:
     explicit TaskModelData(QObject *parent = nullptr);
 
-    int id(){return m_id;}
+    int myid(){return m_myid;}
     int excuteAgv(){return m_excuteAgv;}
     int priority(){return m_priority;}
     int status(){return m_status;}
@@ -40,7 +40,7 @@ public:
     QString discribe(){return m_discribe;}
 
 
-    void setId(int _id){m_id = _id;emit idChanged(_id);}
+    void setMyid(int _id){m_myid = _id;emit myidChanged(_id);}
     void setExcuteAgv(int _excuteAgv){m_excuteAgv = _excuteAgv;emit excuteAgvChanged(_excuteAgv);}
     void setPriority(int _priority){m_priority = _priority;emit priorityChanged(_priority);}
     void setStatus(int _status){m_status = _status;emit statusChanged(_status);}
@@ -56,7 +56,7 @@ public:
 
 
 signals:
-    void idChanged(int _id);
+    void myidChanged(int _id);
     void excuteAgvChanged(int _excuteAgv);
     void priorityChanged(int _priority);
     void statusChanged(int _status);
@@ -73,7 +73,7 @@ signals:
 public slots:
 
 private:
-    int m_id;
+    int m_myid;
     int m_excuteAgv;
     int m_priority;
     int m_status;
